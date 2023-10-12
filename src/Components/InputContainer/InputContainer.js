@@ -68,7 +68,7 @@ const handleNameChange = (e)=>{
     setName(e.target.value);
 }
 
-const [value,setValue] = useState()
+const [value,setValue] = useState('')
 
 const handleValueChange = (e)=>{
     setValue(e.target.value);
@@ -79,13 +79,15 @@ const [personList, setPersonList] = useState([])
 const [arrayResult, setArrayResult] = useState([])
 
 const handlePersonList = ()=>{
-    let person = new Individuo(name,value);
-    let aux = JSON.parse(JSON.stringify(personList));
-    aux.push(person)
-    setPersonList(aux);
-    setArrayResult([]);
-    setName('');
-    setValue('');
+    if(name && value){
+        let person = new Individuo(name,value);
+        let aux = JSON.parse(JSON.stringify(personList));
+        aux.push(person)
+        setPersonList(aux);
+        setArrayResult([]);
+        setName('');
+        setValue('');
+    }
 }
 
 const handleArrayResult = ()=>{

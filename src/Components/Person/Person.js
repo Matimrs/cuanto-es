@@ -1,8 +1,7 @@
 const Person = ({name,gasto}) => {
 return(
     <div>
-        <h3>Nombre: {name}</h3>
-        <h3>Gasto: ${gasto}</h3>
+        <p><b>{name}</b> gasto: <b>${gasto}</b></p>
     </div>
 )
 }

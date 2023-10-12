@@ -57,7 +57,7 @@ const ResultContainer = ({array})=>{
                 return(
                     element.lepaga.map(x => {
                         return(
-                            <Result debtor={x.name} amount={Number(x.paga.toFixed(2))} creditor={element.name}/>
+                            <Result  debtor={x.name} amount={Number(x.paga.toFixed(2))} creditor={element.name}/>
                         )
                     })
                 )

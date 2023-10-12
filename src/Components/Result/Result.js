@@ -17,7 +17,7 @@ class Individuo{
 const Result = ({debtor,amount,creditor}) => {
     return(
         <div>
-            <h2>{debtor} le paga ${amount} a {creditor}</h2>
+            <p><b>{debtor}</b> le paga <b>${amount}</b> a <b>{creditor}</b></p>
         </div>
     )
 }
