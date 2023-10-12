@@ -18,51 +18,21 @@ class Individuo{
     }
 }
 
-const InputContainer = ()=>{
-   
-const [name,setName] = useState('')
+const calculate = (array) => {
 
-const handleNameChange = (e)=>{
-    setName(e.target.value);
-}
+    const aux = JSON.parse(JSON.stringify(array));
 
-const [value,setValue] = useState('')
-
-const handleValueChange = (e)=>{
-    setValue(e.target.value);
-}
-
-const [personList, setPersonList] = useState([])
-
-const handlePersonList = ()=>{
-    const person = new Individuo(name,value);
-    let aux = []
-    personList.forEach(e=>{
-        aux.push(e)
-    })
-    aux.push(person)
-    setPersonList(aux);
-    setName('')
-    setValue('')
-}
-
-
-let arrayResult = [];
-
-function calculate(){
-    let arrayPerson = [];
-    personList.forEach(e=>{
-        arrayPerson.push(e)
-    })
     let prom = 0
-    arrayPerson.forEach((e)=>{
-        prom += ((e.gasto) / arrayPerson.length)
-    })
-    arrayPerson.forEach((e)=>{
+
+    aux.map(e=>{
+        prom += (e.gasto) / aux.length
+    })  
+
+    aux.forEach((e)=>{  //modificar
         if(e.gasto > prom){
             e.recibe = true
             let paga
-            arrayPerson.forEach((x)=>{
+            aux.forEach((x)=>{
                 if(x != e){
                     if(x.gasto < prom){
                         if((e.gasto - prom) > (prom - x.gasto)) {
@@ -87,17 +57,45 @@ function calculate(){
             })
         }
     })
-    arrayResult = arrayPerson;
+    return aux;
 }
 
-const analize = () => {
-    if(arrayResult.length > 0){
-        return(
-            <ResultContainer array={arrayResult}/>
-        )
-    }
-    else return(<h1>Nadie debe nada</h1>)
+const InputContainer = ()=>{
+   
+const [name,setName] = useState('')
+
+const handleNameChange = (e)=>{
+    setName(e.target.value);
 }
+
+const [value,setValue] = useState()
+
+const handleValueChange = (e)=>{
+    setValue(e.target.value);
+}
+
+const [personList, setPersonList] = useState([])
+
+const [arrayResult, setArrayResult] = useState([])
+
+const handlePersonList = ()=>{
+    let person = new Individuo(name,value);
+    let aux = JSON.parse(JSON.stringify(personList));
+    aux.push(person)
+    setPersonList(aux);
+    setArrayResult([]);
+    setName('');
+    setValue('');
+}
+
+const handleArrayResult = ()=>{
+    let aux = JSON.parse(JSON.stringify(personList));
+    const result = calculate(aux).filter(e=>{
+        return e.recibe
+    })
+    setArrayResult(result)
+}
+
     return(
         <div>
             <div>
@@ -107,9 +105,9 @@ const analize = () => {
             </div>
             <PersonList personList={personList}/>
             <div>
-                <button onClick={calculate}>=</button>
+                <button onClick={handleArrayResult}>=</button>
             </div>
-            {analize}
+            <ResultContainer array={arrayResult}/>
         </div>
     )
 }
