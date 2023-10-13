@@ -5,7 +5,7 @@ return(
     <div>
       {personList.map(e=>{
             return (
-                <Person {...e}/>
+                <Person key={e.id} {...e}/>
             )
         })}
     </div>

@@ -10,12 +10,18 @@ class Deudor{
 }
 
 class Individuo{
-    constructor(nombre,gasto){
+    constructor(nombre,gasto,array){
         this.name=nombre
         this.gasto=gasto
         this.recibe=false
         this.lepaga = []
+        this.id = idGenerator(array)
     }
+}
+
+const idGenerator = (array)=>{
+    if(array.length == 0) return 1
+    else return (array[array.length-1].id + 1)
 }
 
 const calculate = (array) => {
@@ -60,8 +66,10 @@ const calculate = (array) => {
     return aux;
 }
 
+
 const InputContainer = ()=>{
    
+
 const [name,setName] = useState('')
 
 const handleNameChange = (e)=>{
@@ -80,7 +88,7 @@ const [arrayResult, setArrayResult] = useState([])
 
 const handlePersonList = ()=>{
     if(name && value){
-        let person = new Individuo(name,value);
+        let person = new Individuo(name,value,personList);
         let aux = JSON.parse(JSON.stringify(personList));
         aux.push(person)
         setPersonList(aux);
@@ -98,11 +106,17 @@ const handleArrayResult = ()=>{
     setArrayResult(result)
 }
 
+const handleEnter = (e)=>{
+    if(e.key === 'Enter'){
+        handlePersonList();
+    }
+}
+
     return(
         <div>
             <div>
-                <input id="inputName" type="text" placeholder="Name" value={name} onChange={handleNameChange} required/>
-                <input id="inputValue" type="number" placeholder="Spent" value={value} onChange={handleValueChange} required/>
+                <input id="inputName" type="text" placeholder="Name" value={name} onChange={handleNameChange} onKeyDown={handleEnter} required/>
+                <input id="inputValue" type="number" placeholder="Spent" value={value} onChange={handleValueChange} onKeyDown={handleEnter} required/>
                 <button type="submit" className="add" onClick={handlePersonList}>+</button>
             </div>
             <PersonList personList={personList}/>
