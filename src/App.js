@@ -1,12 +1,12 @@
 import NavBar from './Components/NavBar/NavBar';
-import IndexContainer from './Components/IndexContainer/IndexContainer';
+import MainContainer from './Components/MainContainer/MainContainer';
 
 
 function App() {
   return (
     <div className='App'>
       <NavBar/>
-      <IndexContainer/>
+      <MainContainer/>
     </div>
   );
 }

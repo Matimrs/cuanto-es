@@ -12,7 +12,7 @@ class Deudor{
 class Individuo{
     constructor(nombre,gasto,array){
         this.name=nombre
-        this.gasto=gasto
+        this.gasto=parseFloat(gasto)
         this.recibe=false
         this.lepaga = []
         this.id = idGenerator(array)
@@ -20,7 +20,7 @@ class Individuo{
 }
 
 const idGenerator = (array)=>{
-    if(array.length == 0) return 1
+    if(array.length === 0) return 1
     else return (array[array.length-1].id + 1)
 }
 
@@ -30,16 +30,16 @@ const calculate = (array) => {
 
     let prom = 0
 
-    aux.map(e=>{
-        prom += (e.gasto) / aux.length
+    aux.map( e =>{
+        prom += (e.gasto) / aux.length;
     })  
 
-    aux.forEach((e)=>{  //modificar
+    aux.forEach((e)=>{  
         if(e.gasto > prom){
             e.recibe = true
             let paga
             aux.forEach((x)=>{
-                if(x != e){
+                if(x !== e){
                     if(x.gasto < prom){
                         if((e.gasto - prom) > (prom - x.gasto)) {
                             e.gasto -= (prom - x.gasto)
@@ -67,50 +67,54 @@ const calculate = (array) => {
 }
 
 
-const InputContainer = ()=>{
-   
+const MainContainer = ()=>{
+    
+    const [name,setName] = useState('')
 
-const [name,setName] = useState('')
+    const handleNameChange = (e)=>{
+        setName(e.target.value);
+    }
 
-const handleNameChange = (e)=>{
-    setName(e.target.value);
-}
+    const [value,setValue] = useState('')
 
-const [value,setValue] = useState('')
+    const handleValueChange = (e)=>{
+        setValue(e.target.value);
+    }
 
-const handleValueChange = (e)=>{
-    setValue(e.target.value);
-}
+    const [personList, setPersonList] = useState([])
 
-const [personList, setPersonList] = useState([])
+    const [arrayResult, setArrayResult] = useState([])
 
-const [arrayResult, setArrayResult] = useState([])
-
-const handlePersonList = ()=>{
-    if(name && value){
-        let person = new Individuo(name,value,personList);
+    const handlePersonList = ()=>{
+        if(name && value){
+            let person = new Individuo(name,value,personList);
+            let aux = JSON.parse(JSON.stringify(personList));
+            aux.push(person)
+            setPersonList(aux);
+            setArrayResult([]);
+            setName('');
+            setValue('');
+        }
+    }
+    const handlePersonDelete = (id) => {
         let aux = JSON.parse(JSON.stringify(personList));
-        aux.push(person)
-        setPersonList(aux);
+        setPersonList(aux.filter((p) => p.id !== id ));
         setArrayResult([]);
-        setName('');
-        setValue('');
     }
-}
 
-const handleArrayResult = ()=>{
-    let aux = JSON.parse(JSON.stringify(personList));
-    const result = calculate(aux).filter(e=>{
-        return e.recibe
-    })
-    setArrayResult(result)
-}
-
-const handleEnter = (e)=>{
-    if(e.key === 'Enter'){
-        handlePersonList();
+    const handleEnter = (e)=>{
+        if(e.key === 'Enter'){
+            handlePersonList();
+        }
     }
-}
+
+    const handleArrayResult = ()=>{
+        let aux = JSON.parse(JSON.stringify(personList));
+        const result = calculate(aux).filter(e=>{
+            return e.recibe
+        })
+        setArrayResult(result)
+    }
 
     return(
         <div>
@@ -119,7 +123,7 @@ const handleEnter = (e)=>{
                 <input id="inputValue" type="number" placeholder="Spent" value={value} onChange={handleValueChange} onKeyDown={handleEnter} required/>
                 <button type="submit" className="add" onClick={handlePersonList}>+</button>
             </div>
-            <PersonList personList={personList}/>
+            <PersonList personList={personList} handlePersonDelete={handlePersonDelete}/>
             <div>
                 <button onClick={handleArrayResult}>=</button>
             </div>
@@ -128,4 +132,4 @@ const handleEnter = (e)=>{
     )
 }
 
-export default InputContainer;
+export default MainContainer;
