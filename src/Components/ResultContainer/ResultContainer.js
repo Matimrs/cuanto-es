@@ -6,13 +6,13 @@ const ResultContainer = ({array})=>{
         <div>
             {
                 array.map(element => {
+                    const lePaga = element.lepaga.filter(e => e.paga !== 0)
                     return(
-                        element.lepaga.map(x => {
-                            if(x.paga !== 0){
+                        lePaga.map(x => {
                                 return(
-                                    <Result key={element.lepaga.indexOf(x)} debtor={x.name} amount={Number(x.paga.toFixed(2))} creditor={element.name}/>
+                                    <Result key={lePaga.indexOf(x)} debtor={x.name} amount={Number(x.paga.toFixed(2))} creditor={element.name}/>
                                 )
-                            }
+                            
                         })
                     )
                 })

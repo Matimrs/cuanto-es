@@ -103,6 +103,8 @@ const MainContainer = ()=>{
 
     const handleEnter = (e)=>{
         if(e.key === 'Enter'){
+            const inputName = document.getElementById("inputName");
+            inputName.focus();
             handlePersonList();
         }
     }
@@ -116,15 +118,31 @@ const MainContainer = ()=>{
     }
 
     return(
-        <div className="mainContainer">
-            <div>
-                <input id="inputName" type="text" placeholder="Name" value={name} onChange={handleNameChange} onKeyDown={handleEnter} required/>
-                <input id="inputValue" type="number" placeholder="Spent" value={value} onChange={handleValueChange} onKeyDown={handleEnter} required/>
-                <button type="submit" className="button" onClick={handlePersonList}>+</button>
+        <div className="mainContainer is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
+            <div class="box container columns">
+                <div class="column is-four-fifths">
+                    <div class="field">
+                        <label class="label">Name</label>
+                        <div class="control">
+                        <input id="inputName" class="input" type="text" placeholder="Name" value={name} onChange={handleNameChange} onKeyDown={handleEnter} required/>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Spent</label>
+                        <div class="control">
+                        <input class="input" id="inputValue" type="number" placeholder="Spent" value={value} onChange={handleValueChange} onKeyDown={handleEnter} required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-one-fifths is-flex is-flex-direction-row is-justify-content-center is-align-items-center">
+                    <button class="button is-dark" type="submit" onClick={handlePersonList}>+</button>
+                </div>
             </div>
+                
             <PersonList personList={personList} handlePersonDelete={handlePersonDelete}/>
             <div>
-                <button onClick={handleArrayResult} className="button">=</button>
+                <button onClick={handleArrayResult} className="button mb-3">Calcular</button>
             </div>
             <ResultContainer array={arrayResult}/>
         </div>
