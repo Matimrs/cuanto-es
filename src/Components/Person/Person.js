@@ -5,15 +5,15 @@ const Person = ({id,name,gasto,handlePersonDelete}) => {
         }
 
 return(
-    <article class="message is-dark container">
+    <div class="message is-flex-direction-row is-justify-content-center is-align-items-center is-dark m-3">
         <div class="message-header">
-            <p>{name}</p>
+            <p class="mr-2">{name}</p>
             <button class="delete" aria-label="delete" onClick={personDelete}></button>
         </div>
         <div class="message-body">
             ${gasto}
         </div>
-    </article>
+    </div>
 )
 }
 

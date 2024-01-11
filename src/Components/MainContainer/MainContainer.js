@@ -103,6 +103,8 @@ const MainContainer = ()=>{
 
     const handleEnter = (e)=>{
         if(e.key === 'Enter'){
+            const inputName = document.getElementById("inputName");
+            inputName.focus();
             handlePersonList();
         }
     }
@@ -140,7 +142,7 @@ const MainContainer = ()=>{
                 
             <PersonList personList={personList} handlePersonDelete={handlePersonDelete}/>
             <div>
-                <button onClick={handleArrayResult} className="button">=</button>
+                <button onClick={handleArrayResult} className="button mb-3">Calcular</button>
             </div>
             <ResultContainer array={arrayResult}/>
         </div>
