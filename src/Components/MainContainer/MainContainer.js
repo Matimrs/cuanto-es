@@ -119,7 +119,7 @@ const MainContainer = ()=>{
 
     return(
         <div className="mainContainer is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
-            <div class="box container columns m-3">
+            <div class="box container columns m-4">
                 <div class="column is-four-fifths">
                     <div class="field">
                         <label class="label">Name</label>
@@ -142,7 +142,7 @@ const MainContainer = ()=>{
                 
             <PersonList personList={personList} handlePersonDelete={handlePersonDelete}/>
             <div>
-                <button onClick={handleArrayResult} className="button mb-3">Calcular</button>
+                <button onClick={handleArrayResult} className="button mb-3">Calculate</button>
             </div>
             <ResultContainer array={arrayResult}/>
         </div>
