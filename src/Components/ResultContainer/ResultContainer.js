@@ -1,7 +1,7 @@
 import Result from "../Result/Result";
 
 const ResultContainer = ({array})=>{
-    console.log(array);
+    
     return(
         <div>
             {

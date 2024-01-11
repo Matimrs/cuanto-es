@@ -1,7 +1,6 @@
 import PersonList from "../PersonList/PersonList";
 import ResultContainer from "../ResultContainer/ResultContainer";
 import { useState } from "react";
-
 class Deudor{
     constructor(name, cant){
         this.name = name
@@ -30,7 +29,7 @@ const calculate = (array) => {
 
     let prom = 0
 
-    aux.map( e =>{
+    aux.forEach( e =>{
         prom += (e.gasto) / aux.length;
     })  
 
@@ -117,15 +116,15 @@ const MainContainer = ()=>{
     }
 
     return(
-        <div>
+        <div className="mainContainer">
             <div>
                 <input id="inputName" type="text" placeholder="Name" value={name} onChange={handleNameChange} onKeyDown={handleEnter} required/>
                 <input id="inputValue" type="number" placeholder="Spent" value={value} onChange={handleValueChange} onKeyDown={handleEnter} required/>
-                <button type="submit" className="add" onClick={handlePersonList}>+</button>
+                <button type="submit" className="button" onClick={handlePersonList}>+</button>
             </div>
             <PersonList personList={personList} handlePersonDelete={handlePersonDelete}/>
             <div>
-                <button onClick={handleArrayResult}>=</button>
+                <button onClick={handleArrayResult} className="button">=</button>
             </div>
             <ResultContainer array={arrayResult}/>
         </div>

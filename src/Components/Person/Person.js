@@ -7,7 +7,7 @@ const Person = ({id,name,gasto,handlePersonDelete}) => {
 return(
     <div>
         <p><b>{name}</b> gasto: <b>${gasto}</b></p>
-        <button onClick={personDelete}>x</button>
+        <button className="button" onClick={personDelete}>x</button>
     </div>
 )
 }
