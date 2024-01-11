@@ -119,7 +119,7 @@ const MainContainer = ()=>{
 
     return(
         <div className="mainContainer is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
-            <div class="box container columns">
+            <div class="box container columns m-3">
                 <div class="column is-four-fifths">
                     <div class="field">
                         <label class="label">Name</label>
