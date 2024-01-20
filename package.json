@@ -1,5 +1,6 @@
 {
-  "name": "pagame-raton",
+  "name": "distribution",
+  "description": "Website to divide expenses between parties",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
