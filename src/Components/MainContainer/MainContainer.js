@@ -1,5 +1,5 @@
 import PersonList from "../PersonList/PersonList";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { AddPersonBox } from "../AddPersonBox/AddPersonBox";
 class Deudor {
@@ -64,7 +64,6 @@ const calculate = (array) => {
 };
 
 const MainContainer = ({ setArrayResult }) => {
-
   const [name, setName] = useState("");
 
   const [flagName, setFlagName] = useState(true);
@@ -75,46 +74,43 @@ const MainContainer = ({ setArrayResult }) => {
 
   const [value, setValue] = useState("");
 
-  const inputName = document.getElementById("inputName");
+  const inputNameRef = useRef(null);
 
-  const inputValue = document.getElementById("inputValue");
+  const inputValueRef = useRef(null);
 
   const handleNameChange = (e) => {
-    setFlagName(true);
+    if (e.target.value.trim().length > 0) setFlagName(true);
+    else setFlagName(false);
     setName(e.target.value);
   };
 
   const handleValueChange = (e) => {
-    setFlagValue(true);
+    if (e.target.value.length > 0) setFlagValue(true);
+    else setFlagValue(false);
     setValue(e.target.value);
   };
 
   const handlePersonList = () => {
-    if(name && value){
+    if (name.length > 0 && value.length > 0) {
       let person = new Individuo(name, value, personList);
       let aux = JSON.parse(JSON.stringify(personList));
       aux.push(person);
-      setFlagName(true);
-      setFlagValue(true);
       setPersonList(aux);
       setArrayResult([]);
       setName("");
       setValue("");
-    }
-    else if (!name && !value){
-        setFlagName(false);
-        setFlagValue(false);
-        inputName.focus();
-    }
-    else if(!name) {
-        setFlagName(false);
-        setFlagValue(true);
-        inputName.focus();
-    }
-    else {
-        setFlagValue(false);
-        setFlagName(true);
-        inputValue.focus();
+    } else if (!name && !value) {
+      setFlagName(false);
+      setFlagValue(false);
+      inputNameRef.current.focus();
+    } else if (!name) {
+      setFlagName(false);
+      setFlagValue(true);
+      inputNameRef.current.focus();
+    } else {
+      setFlagValue(false);
+      setFlagName(true);
+      inputValueRef.current.focus();
     }
   };
 
@@ -126,12 +122,13 @@ const MainContainer = ({ setArrayResult }) => {
 
   const handleEnter = (e) => {
     if (e.key === "Enter") {
-      inputName.focus();
+      inputNameRef.current.focus();
       handlePersonList();
     }
   };
 
   const handleArrayResult = () => {
+    console.log(personList);
     let aux = JSON.parse(JSON.stringify(personList));
     const result = calculate(aux).filter((e) => {
       return e.recibe;
@@ -152,8 +149,11 @@ const MainContainer = ({ setArrayResult }) => {
             handleEnter={handleEnter}
             handleNameChange={handleNameChange}
             handleValueChange={handleValueChange}
+            handlePersonList={handlePersonList}
             flagName={flagName}
             flagValue={flagValue}
+            inputNameRef={inputNameRef}
+            inputValueRef={inputValueRef}
           />
           <PersonList
             personList={personList}

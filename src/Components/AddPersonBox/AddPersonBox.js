@@ -6,9 +6,10 @@ export const AddPersonBox = ({
   handleEnter,
   handlePersonList,
   flagName,
-  flagValue
+  flagValue,
+  inputNameRef,
+  inputValueRef,
 }) => {
-
   return (
     <div
       class="box container columns mb-4 mx-0 mt-0"
@@ -23,6 +24,7 @@ export const AddPersonBox = ({
           <label class="label">Name</label>
           <div class="control">
             <input
+              ref={inputNameRef}
               id="inputName"
               class="input"
               type="text"
@@ -32,8 +34,8 @@ export const AddPersonBox = ({
               onKeyDown={handleEnter}
               required
             />
-            { !flagName && (
-                <span class="tag is-danger is-light">Name is necessary</span>
+            {!flagName && (
+              <span class="tag is-danger is-light">Name is necessary</span>
             )}
           </div>
         </div>
@@ -41,6 +43,7 @@ export const AddPersonBox = ({
           <label class="label">Spent</label>
           <div class="control">
             <input
+              ref={inputValueRef}
               class="input"
               id="inputValue"
               type="number"
@@ -50,8 +53,8 @@ export const AddPersonBox = ({
               onKeyDown={handleEnter}
               required
             />
-            { !flagValue && (
-                <span class="tag is-danger is-light">Spending is necessary</span>
+            {!flagValue && (
+              <span class="tag is-danger is-light">Spending is necessary</span>
             )}
           </div>
         </div>
