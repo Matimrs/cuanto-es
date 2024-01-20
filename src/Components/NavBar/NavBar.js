@@ -1,11 +1,13 @@
+import { NavLink } from "react-router-dom";
+
 
 const NavBar = () => {
     return(
-        <nav class="navbar is-flex is-flex-direction-row is-justify-content-center is-align-items-center" role="navigation" aria-label="main navigation">
+        <nav class="navbar is-flex is-flex-direction-row is-justify-content-center is-align-items-center pt-4" role="navigation" aria-label="main navigation">
             <div class="navbar-brand">
-                <a class="navbar-item" href="https://github.com/Matimrs">
-                <img src="LogoM.png" alt="Logo"/>
-                </a>
+                <NavLink to={'/'}>
+                    <img src="LogoM.png" alt="Logo" style={{width: '50px'}}/>
+                </NavLink>
             </div>
         </nav>
     )

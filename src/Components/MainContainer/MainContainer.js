@@ -1,7 +1,6 @@
 import PersonList from "../PersonList/PersonList";
-import ResultContainer from "../ResultContainer/ResultContainer";
 import { useState } from "react";
-import "./MainContaner.css";
+import { Link } from "react-router-dom";
 class Deudor{
     constructor(name, cant){
         this.name = name
@@ -67,7 +66,7 @@ const calculate = (array) => {
 }
 
 
-const MainContainer = ()=>{
+const MainContainer = ({setArrayResult})=>{
     
     const [name,setName] = useState('')
 
@@ -82,8 +81,6 @@ const MainContainer = ()=>{
     }
 
     const [personList, setPersonList] = useState([])
-
-    const [arrayResult, setArrayResult] = useState([])
 
     const handlePersonList = ()=>{
         if(name && value){
@@ -119,10 +116,10 @@ const MainContainer = ()=>{
     }
 
     return(
-        <div class="is-flex is-flex-direction-row is-justify-content-center">
-            <div class="" style={{width: '40%', minWidth: '250px' }}>
+        <div class="is-flex is-flex-direction-row is-justify-content-center is-align-items-center" style={{height: 'calc(100% - 88px)'}}>
+            <div style={{width: '40%', minWidth: '250px' }}>
                 <div class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
-                    <div class="box container columns mb-4 mx-0 mt-0" style={{width: '100%'}}>
+                    <div class="box container columns mb-4 mx-0 mt-0" style={{width: '100%', boxShadow: '0 0 0.8em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)' }}>
                         <div class="column is-four-fifths">
                             <div class="field">
                                 <label class="label">Name</label>
@@ -142,14 +139,15 @@ const MainContainer = ()=>{
                             <button class="button is-dark" type="submit" onClick={handlePersonList}>+</button>
                         </div>
                     </div>
-                        
                     <PersonList personList={personList} handlePersonDelete={handlePersonDelete}/>
-                    <button onClick={handleArrayResult} class="button is-light is-fullwidth mb-3">Calculate</button>
-                    <ResultContainer array={arrayResult}/>
+                    { personList.length > 1 && (
+                        <Link to={'/result'} style={{width: '100%'}}><button onClick={handleArrayResult} class="button is-light is-fullwidth mb-3">Calculate</button></Link>
+                    )}
+                    
                 </div>
             </div>
         </div>
     )
 }
 
-export default MainContainer;
+export default MainContainer

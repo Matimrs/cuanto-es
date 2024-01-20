@@ -1,8 +1,8 @@
 const Result = ({debtor,amount,creditor}) => {
     return(
-        <article class="message is-dark container" style={{width: '100%'}}>
+        <article class="message is-dark container my-5" style={{width: '100%'}}>
             <div class="message-body">
-                <b>{debtor}</b> paga <b>${amount}</b> a <b>{creditor}</b>
+                <b>{debtor}</b> pays <b>${amount}</b> to <b>{creditor}</b>
             </div>
         </article>
     )
