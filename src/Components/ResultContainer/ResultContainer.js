@@ -3,7 +3,7 @@ import Result from "../Result/Result";
 const ResultContainer = ({array})=>{
     
     return(
-        <div className="is-flex is-flex-direction-row is-justify-content-space-between is-align-items-center is-flex-wrap-wrap mb-3" style={{width: '100%'}}>
+        <div className="is-flex is-flex-direction-row is-justify-content-center is-align-items-center is-flex-wrap-wrap mb-3" style={{width: '100%'}}>
             {
                 array.map(element => {
                     const lePaga = element.lepaga.filter(e => e.paga !== 0)
