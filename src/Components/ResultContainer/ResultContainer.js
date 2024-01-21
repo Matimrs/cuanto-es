@@ -7,7 +7,7 @@ const ResultContainer = ({array, setResultView})=>{
 
         setResultView(true);
         
-    },[]);
+    },[setResultView]);
     
     return(
         <div class="is-flex is-flex-direction-row is-justify-content-center is-align-items-center" style={{minHeight: 'calc(100% - 88px)'}}>
