@@ -1,6 +1,13 @@
 import Result from "../Result/Result";
+import { useEffect } from "react";
 
-const ResultContainer = ({array})=>{
+const ResultContainer = ({array, setResultView})=>{
+
+    useEffect(() => {
+
+        setResultView(true);
+        
+    },[]);
     
     return(
         <div class="is-flex is-flex-direction-row is-justify-content-center is-align-items-center" style={{height: 'calc(100% - 88px)'}}>

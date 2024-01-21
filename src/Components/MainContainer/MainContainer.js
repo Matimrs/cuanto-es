@@ -1,5 +1,5 @@
 import PersonList from "../PersonList/PersonList";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AddPersonBox } from "../AddPersonBox/AddPersonBox";
 class Deudor {
@@ -63,7 +63,14 @@ const calculate = (array) => {
   return aux;
 };
 
-const MainContainer = ({ setArrayResult }) => {
+const MainContainer = ({ setArrayResult, setResultView }) => {
+
+  useEffect(() => {
+
+    setResultView(false);
+    
+  },[]);
+
   const [name, setName] = useState("");
 
   const [flagName, setFlagName] = useState(true);
@@ -73,6 +80,8 @@ const MainContainer = ({ setArrayResult }) => {
   const [personList, setPersonList] = useState([]);
 
   const [value, setValue] = useState("");
+
+  const [loading, setLoading] = useState(false);
 
   const inputNameRef = useRef(null);
 
@@ -128,20 +137,20 @@ const MainContainer = ({ setArrayResult }) => {
   };
 
   const handleArrayResult = () => {
-    console.log(personList);
     let aux = JSON.parse(JSON.stringify(personList));
     const result = calculate(aux).filter((e) => {
       return e.recibe;
     });
+    setLoading(true);
     setArrayResult(result);
   };
 
   return (
     <div
       class="is-flex is-flex-direction-row is-justify-content-center is-align-items-center"
-      style={{ height: "calc(100% - 88px)" }}
+      style={{ minHeight: "calc(100% - 88px)" }}
     >
-      <div style={{ width: "40%", minWidth: "250px" }}>
+      <div style={{ width: "40%", minWidth: "250px", paddingTop: '10px' }}>
         <div class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
           <AddPersonBox
             name={name}
@@ -161,12 +170,28 @@ const MainContainer = ({ setArrayResult }) => {
           />
           {personList.length > 1 && (
             <Link to={"/result"} style={{ width: "100%" }}>
+              { !loading && (
               <button
                 onClick={handleArrayResult}
-                class="button is-light is-fullwidth mb-3"
+                class="button is-outlined is-fullwidth mb-3 label"
+                style={{
+                  boxShadow:
+                    "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+                }}
               >
                 Calculate
-              </button>
+              </button>)
+              }
+              {loading && (
+                <button
+                onClick={handleArrayResult}
+                className="button is-loading is-fullwidth mb-3"
+                style={{
+                  boxShadow:
+                    "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+                }}
+              />
+              )}
             </Link>
           )}
         </div>
