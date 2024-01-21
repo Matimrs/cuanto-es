@@ -10,7 +10,7 @@ const ResultContainer = ({array, setResultView})=>{
     },[]);
     
     return(
-        <div class="is-flex is-flex-direction-row is-justify-content-center is-align-items-center" style={{height: 'calc(100% - 88px)'}}>
+        <div class="is-flex is-flex-direction-row is-justify-content-center is-align-items-center" style={{minHeight: 'calc(100% - 88px)'}}>
             <div className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center my-3" style={{width: '40%', minWidth: '250px' }}>
                 {
                     array.map(element => {

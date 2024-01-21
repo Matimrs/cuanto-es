@@ -68,7 +68,7 @@ const MainContainer = ({ setArrayResult, setResultView }) => {
   useEffect(() => {
 
     setResultView(false);
-    
+
   },[]);
 
   const [name, setName] = useState("");
