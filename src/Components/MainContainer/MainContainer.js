@@ -128,7 +128,6 @@ const MainContainer = ({ setArrayResult }) => {
   };
 
   const handleArrayResult = () => {
-    console.log(personList);
     let aux = JSON.parse(JSON.stringify(personList));
     const result = calculate(aux).filter((e) => {
       return e.recibe;
@@ -138,8 +137,8 @@ const MainContainer = ({ setArrayResult }) => {
 
   return (
     <div
-      class="is-flex is-flex-direction-row is-justify-content-center is-align-items-center"
-      style={{ height: "calc(100% - 88px)" }}
+      class="is-flex is-flex-direction-row is-justify-content-center is-align-items-center mt-4"
+      style={{ minHeight: "calc(100% - 88px)"}}
     >
       <div style={{ width: "40%", minWidth: "250px" }}>
         <div class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
