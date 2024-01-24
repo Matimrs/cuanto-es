@@ -12,6 +12,7 @@ Distribution es una aplicación que se encarga de distribuir equitativamente los
 - **Edad:** 20 años
 - **Pais:** Argentina
 - **Estudiante de:** Ingeniería en Sistemas de Información en UTN FRSF
+- **Cursando:** 3er Año
 - **Experiencia:** Desarrollador Full Stack con MERN stack
 
 ## Cómo usar
@@ -39,6 +40,7 @@ Distribution is an application that fairly distributes expenses among 2 or more 
 - **Age:** 20 years old
 - **Country:** Argentina 
 - **Student at:** Information Systems Engineering at UTN FRSF
+- **Currently in**: 3rd Year
 - **Experience:** Full Stack Developer with MERN stack
 
 ## How to Use
