@@ -12,15 +12,15 @@ Distribution es una aplicación que se encarga de distribuir equitativamente los
 - **Edad:** 20 años
 - **Pais:** Argentina
 - **Estudiante de:** Ingeniería en Sistemas de Información en UTN FRSF
-- **Experiencia:** Desarrollador Fullstack con MERN stack
+- **Experiencia:** Desarrollador Full Stack con MERN stack
 
 ## Cómo usar
 1. Clona este repositorio: `git clone https://github.com/tu-usuario/tu-repositorio.git`
 2. Instala las dependencias: `npm install`
 3. Inicia la aplicación: `npm start`
-4. Accede a la aplicación desde tu navegador: [http://localhost:3000](http://localhost:3000){:target="_blank"}
+4. Accede a la aplicación desde tu navegador: [http://localhost:3000](http://localhost:3000)
 
-También puedes acceder a la aplicación en línea: [Distribution App](https://distributionm.netlify.app/){:target="_blank"}
+También puedes acceder a la aplicación en línea: [Distribution App](https://distributionm.netlify.app/)
 
 ¡Disfruta de Distribution!
 
@@ -39,14 +39,14 @@ Distribution is an application that fairly distributes expenses among 2 or more 
 - **Age:** 20 years old
 - **Country:** Argentina 
 - **Student at:** Information Systems Engineering at UTN FRSF
-- **Experience:** Fullstack Developer with MERN stack
+- **Experience:** Full Stack Developer with MERN stack
 
 ## How to Use
 1. Clone this repository: `git clone https://github.com/your-username/your-repository.git`
 2. Install dependencies: `npm install`
 3. Start the application: `npm start`
-4. Access the application from your browser: [http://localhost:3000](http://localhost:3000){:target="_blank"}
+4. Access the application from your browser: [http://localhost:3000](http://localhost:3000)
 
-You can also access the online application: [Distribution App](https://distributionm.netlify.app/){:target="_blank"}
+You can also access the online application: [Distribution App](https://distributionm.netlify.app/)
 
 Enjoy Distribution!
