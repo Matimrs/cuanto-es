@@ -18,9 +18,9 @@ Distribution es una aplicación que se encarga de distribuir equitativamente los
 1. Clona este repositorio: `git clone https://github.com/tu-usuario/tu-repositorio.git`
 2. Instala las dependencias: `npm install`
 3. Inicia la aplicación: `npm start`
-4. Accede a la aplicación desde tu navegador: [http://localhost:3000](http://localhost:3000)
+4. Accede a la aplicación desde tu navegador: [http://localhost:3000](http://localhost:3000){:target="_blank"}
 
-También puedes acceder a la aplicación en línea: [Distribution App](https://distributionm.netlify.app/)
+También puedes acceder a la aplicación en línea: [Distribution App](https://distributionm.netlify.app/){:target="_blank"}
 
 ¡Disfruta de Distribution!
 
@@ -45,8 +45,8 @@ Distribution is an application that fairly distributes expenses among 2 or more 
 1. Clone this repository: `git clone https://github.com/your-username/your-repository.git`
 2. Install dependencies: `npm install`
 3. Start the application: `npm start`
-4. Access the application from your browser: [http://localhost:3000](http://localhost:3000)
+4. Access the application from your browser: [http://localhost:3000](http://localhost:3000){:target="_blank"}
 
-You can also access the online application: [Distribution App](https://distributionm.netlify.app/)
+You can also access the online application: [Distribution App](https://distributionm.netlify.app/){:target="_blank"}
 
 Enjoy Distribution!
