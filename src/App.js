@@ -23,6 +23,7 @@ function App() {
               <MainContainer
                 setResultView={setResultView}
                 setArrayResult={setArrayResult}
+                isSmallScreen={isSmallScreen}
               />
             }
           />

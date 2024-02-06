@@ -63,7 +63,7 @@ const calculate = (array) => {
   return aux;
 };
 
-const MainContainer = ({ setArrayResult, setResultView }) => {
+const MainContainer = ({ setArrayResult, setResultView, isSmallScreen }) => {
   useEffect(() => {
     setResultView(false);
   }, [setResultView]);
@@ -145,7 +145,7 @@ const MainContainer = ({ setArrayResult, setResultView }) => {
   return (
     <div
       class="is-flex is-flex-direction-row is-justify-content-center is-align-items-center"
-      style={{ minHeight: "calc(100% - 176px)" }}
+      style={{ minHeight: `calc(100% - ${(isSmallScreen)? "186" : "126"}px)` }}
     >
       <div style={{ width: "40%", minWidth: "250px", paddingTop: "10px" }}>
         <div class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
