@@ -64,12 +64,9 @@ const calculate = (array) => {
 };
 
 const MainContainer = ({ setArrayResult, setResultView }) => {
-
   useEffect(() => {
-
     setResultView(false);
-
-  },[setResultView]);
+  }, [setResultView]);
 
   const [name, setName] = useState("");
 
@@ -148,9 +145,9 @@ const MainContainer = ({ setArrayResult, setResultView }) => {
   return (
     <div
       class="is-flex is-flex-direction-row is-justify-content-center is-align-items-center"
-      style={{ minHeight: "calc(100% - 88px)" }}
+      style={{ minHeight: "calc(100% - 176px)" }}
     >
-      <div style={{ width: "40%", minWidth: "250px", paddingTop: '10px' }}>
+      <div style={{ width: "40%", minWidth: "250px", paddingTop: "10px" }}>
         <div class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
           <AddPersonBox
             name={name}
@@ -170,27 +167,27 @@ const MainContainer = ({ setArrayResult, setResultView }) => {
           />
           {personList.length > 1 && (
             <Link to={"/result"} style={{ width: "100%" }}>
-              { !loading && (
-              <button
-                onClick={handleArrayResult}
-                class="button is-outlined is-fullwidth mb-3 label"
-                style={{
-                  boxShadow:
-                    "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
-                }}
-              >
-                Calculate
-              </button>)
-              }
+              {!loading && (
+                <button
+                  onClick={handleArrayResult}
+                  class="button is-outlined is-fullwidth mb-3 label"
+                  style={{
+                    boxShadow:
+                      "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+                  }}
+                >
+                  Calculate
+                </button>
+              )}
               {loading && (
                 <button
-                onClick={handleArrayResult}
-                className="button is-loading is-fullwidth mb-3"
-                style={{
-                  boxShadow:
-                    "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
-                }}
-              />
+                  onClick={handleArrayResult}
+                  className="button is-loading is-fullwidth mb-3"
+                  style={{
+                    boxShadow:
+                      "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+                  }}
+                />
               )}
             </Link>
           )}
