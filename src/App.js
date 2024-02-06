@@ -33,6 +33,7 @@ function App() {
               <ResultContainer
                 setResultView={setResultView}
                 array={arrayResult}
+                isSmallScreen={isSmallScreen}
               />
             }
           />
