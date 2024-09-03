@@ -1,6 +1,13 @@
 import { NavLink } from "react-router-dom";
+import { useContext } from "react";
+import { ScreenContext } from "../../context/ScreenContext";
+import { ResultContext } from "../../context/ResultContext";
 
-const NavBar = ({ resultView, isSmallScreen }) => {
+const NavBar = () => {
+const { isSmallScreen } = useContext(ScreenContext);
+
+const { resultView } = useContext(ResultContext);
+
   return (
     <nav
       class={`navbar is-flex ${

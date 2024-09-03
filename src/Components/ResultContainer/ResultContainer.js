@@ -1,7 +1,13 @@
 import Result from "../Result/Result";
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
+import { ScreenContext } from "../../context/ScreenContext";
+import { ResultContext } from "../../context/ResultContext";
 
-const ResultContainer = ({array, setResultView, isSmallScreen})=>{
+const ResultContainer = ({array})=>{
+
+    const { setResultView } = useContext(ResultContext);
+
+    const { isSmallScreen } = useContext(ScreenContext);
 
     useEffect(() => {
 

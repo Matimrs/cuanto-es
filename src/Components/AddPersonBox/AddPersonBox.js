@@ -1,15 +1,10 @@
-export const AddPersonBox = ({
-  name,
-  value,
-  handleNameChange,
-  handleValueChange,
-  handleEnter,
-  handlePersonList,
-  flagName,
-  flagValue,
-  inputNameRef,
-  inputValueRef,
-}) => {
+import { useContext } from "react";
+import { PersonContext } from "../../context/PersonContext";
+
+export const AddPersonBox = () => {
+
+  const { handlePersons, inputNameRef, name, handleNameChange, handleEnter, flagName, inputValueRef, value, handleValueChange, flagValue } = useContext(PersonContext);
+
   return (
     <div
       class="box container columns mb-4 mx-0 mt-0"
@@ -63,7 +58,7 @@ export const AddPersonBox = ({
         <button
           class="button is-dark pt-1"
           type="submit"
-          onClick={handlePersonList}
+          onClick={handlePersons}
         >
           +
         </button>
