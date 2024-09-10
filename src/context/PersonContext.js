@@ -1,23 +1,19 @@
-import { createContext, useState, useRef } from "react";
-import Individuo from "../classes/Individuo";
-
+import { createContext, useState, useRef, useContext } from "react";
+import { ResultContext } from "./ResultContext";
+import Person from "../classes/Person";
 const PersonContext = createContext();
 
 // Proveedor del contexto para las personas
 const PersonProvider = ({ children }) => {
+  const { setResult } = useContext(ResultContext);
+
   const [name, setName] = useState("");
 
   const [flagName, setFlagName] = useState(true);
 
-  const [flagValue, setFlagValue] = useState(true);
-
-  const [value, setValue] = useState("");
-
   const [persons, setPersons] = useState([]);
 
   const inputNameRef = useRef(null);
-
-  const inputValueRef = useRef(null);
 
   const handleNameChange = (e) => {
     if (e.target.value.trim().length > 0) setFlagName(true);
@@ -25,38 +21,22 @@ const PersonProvider = ({ children }) => {
     setName(e.target.value);
   };
 
-  const handleValueChange = (e) => {
-    if (e.target.value.length > 0) setFlagValue(true);
-    else setFlagValue(false);
-    setValue(e.target.value);
-  };
-
   const handlePersons = () => {
-    if (name.length > 0 && value.length > 0) {
-      let person = new Individuo(name, value, persons);
+    if (name.length > 0) {
+      let person = new Person(name, persons);
       addPerson(person);
-      setArrayResult([]);
+      setResult([]);
       setName("");
-      setValue("");
-    } else if (!name && !value) {
-      setFlagName(false);
-      setFlagValue(false);
-      inputNameRef.current.focus();
-    } else if (!name) {
-      setFlagName(false);
-      setFlagValue(true);
       inputNameRef.current.focus();
     } else {
-      setFlagValue(false);
-      setFlagName(true);
-      inputValueRef.current.focus();
-    }
+      setFlagName(false);
+      inputNameRef.current.focus();
+    } 
   };
 
   // Función para agregar una nueva persona
   const addPerson = (person) => {
-    const newPerson = { ...person };
-    setPersons([...persons, newPerson]);
+    setPersons([...persons, person]);
   };
 
   // Función para eliminar una persona por id
@@ -76,7 +56,16 @@ const PersonProvider = ({ children }) => {
 
   return (
     <PersonContext.Provider
-      value={{ persons, handlePersons, removePerson, updatePerson, handleNameChange, handleValueChange, handlePersons, flagName, flagValue, inputNameRef, inputValueRef }}
+      value={{
+        persons,
+        handlePersons,
+        removePerson,
+        updatePerson,
+        handleNameChange,
+        name,
+        flagName,
+        inputNameRef
+      }}
     >
       {children}
     </PersonContext.Provider>

@@ -3,7 +3,7 @@ import { ScreenContext } from "../../context/ScreenContext";
 import { AiFillInstagram, AiFillLinkedin, AiFillGithub } from "react-icons/ai";
 import { IconContext } from "react-icons";
 
-const Footer = () => {
+export const Footer = () => {
 
   const { isSmallScreen } = useContext(ScreenContext);
 
@@ -54,4 +54,3 @@ const Footer = () => {
   );
 };
 
-export default Footer;

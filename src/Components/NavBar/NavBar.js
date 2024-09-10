@@ -3,14 +3,14 @@ import { useContext } from "react";
 import { ScreenContext } from "../../context/ScreenContext";
 import { ResultContext } from "../../context/ResultContext";
 
-const NavBar = () => {
-const { isSmallScreen } = useContext(ScreenContext);
+export const NavBar = () => {
+  const { isSmallScreen } = useContext(ScreenContext);
 
-const { resultView } = useContext(ResultContext);
+  const { resultView } = useContext(ResultContext);
 
   return (
     <nav
-      class={`navbar is-flex ${
+      className={`navbar is-flex ${
         isSmallScreen && resultView
           ? `is-justify-content-right`
           : `is-justify-content-center`
@@ -48,5 +48,3 @@ const { resultView } = useContext(ResultContext);
     </nav>
   );
 };
-
-export default NavBar;

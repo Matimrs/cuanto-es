@@ -13,12 +13,15 @@ const CategoryProvider = ({ children }) => {
   };
 
   // Función para agregar una persona a una categoría
-  const addPersonToCategory = (categoryId, person) => {
-    setCategories(categories.map(category => 
-      category.id === categoryId 
-        ? { ...category, persons: [...category.persons, person] } 
-        : category
-    ));
+  const addPersonToCategory = (categoryId, person, gasto) => {
+    setCategories(categories.map(category => {
+      if (category.id === categoryId) {
+        const updatedCategory = category;
+        updatedCategory.addPerson(person, gasto);
+        return updatedCategory;
+      }
+      return category;
+    }));
   };
 
   return (
