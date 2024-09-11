@@ -1,24 +1,21 @@
 import { NavLink } from "react-router-dom";
 import { useContext } from "react";
 import { ScreenContext } from "../../context/ScreenContext";
-import { ResultContext } from "../../context/ResultContext";
 
 export const NavBar = () => {
-  const { isSmallScreen } = useContext(ScreenContext);
-
-  const { resultView } = useContext(ResultContext);
+  const { isSmallScreen, mainView } = useContext(ScreenContext);
 
   return (
     <nav
       className={`navbar is-flex ${
-        isSmallScreen && resultView
+        isSmallScreen && !mainView
           ? `is-justify-content-right`
           : `is-justify-content-center`
       } is-align-items-center pt-4`}
       role="navigation"
       aria-label="main navigation"
     >
-      {resultView && (
+      {!mainView && (
         <NavLink to={"/"}>
           <button
             className="button is-black label is-small"
@@ -31,7 +28,7 @@ export const NavBar = () => {
               minWidth: "80px",
             }}
           >
-            Back
+            Volver
           </button>
         </NavLink>
       )}

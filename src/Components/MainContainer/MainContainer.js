@@ -1,36 +1,16 @@
 import { PersonList } from "../Person/PersonList/PersonList";
 import { AddPersonBox } from "../Person/AddPersonBox/AddPersonBox";
-import { useState, useEffect } from "react";
 import { useContext } from "react";
 import { ScreenContext } from "../../context/ScreenContext";
-import { ResultContext } from "../../context/ResultContext";
 import { PersonContext } from "../../context/PersonContext";
 import { Link } from "react-router-dom";
-import { calculate } from "../../utils/calculate";
 
 
 export const MainContainer = () => {
 
   const { isSmallScreen } = useContext(ScreenContext);
 
-  const { setResultView, setResult } = useContext(ResultContext);
-
-  const { persons} = useContext(PersonContext);
-
-  useEffect(() => {
-    setResultView(false);
-  }, [setResultView]);
-
-  const [loading, setLoading] = useState(false);
-
-  const handleResult = () => {
-    let aux = JSON.parse(JSON.stringify(persons));
-    const result = calculate(aux).filter((e) => {
-      return e.recibe;
-    });
-    setLoading(true);
-    setResult(result);
-  };
+  const { persons } = useContext(PersonContext);
 
   return (
     <div
@@ -44,28 +24,17 @@ export const MainContainer = () => {
           <PersonList
           />
           {persons.length > 1 && (
-            <Link to={"/result"} style={{ width: "100%" }}>
-              {!loading && (
+            <Link to={"/categorys"} style={{ width: "100%" }}>
+              
                 <button
-                  onClick={handleResult}
                   className="button is-outlined is-fullwidth mb-3 label"
                   style={{
                     boxShadow:
                       "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
                   }}
                 >
-                  Continue
+                  Continuar
                 </button>
-              )}
-              {loading && (
-                <button
-                  className="button is-loading is-fullwidth mb-3"
-                  style={{
-                    boxShadow:
-                      "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
-                  }}
-                />
-              )}
             </Link>
           )}
         </div>

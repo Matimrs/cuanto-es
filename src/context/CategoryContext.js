@@ -1,14 +1,14 @@
 import React, { createContext, useState } from 'react';
+import Category from '../classes/Category';
 
-// Crear el contexto para las categorías
 const CategoryContext = createContext();
 
-// Proveedor del contexto para las categorías
 const CategoryProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
 
-  // Función para agregar una nueva categoría
-  const addCategory = (category) => {
+  
+  const addCategory = (categoryName) => {
+    const category = new Category(categories, categoryName)
     setCategories([...categories, category]);
   };
 
@@ -24,8 +24,13 @@ const CategoryProvider = ({ children }) => {
     }));
   };
 
+  const deleteCategory = (categoryId) => {
+    const newCategories = categories.filter(category => category.id !== categoryId).map((category, index) => ({ ...category, id: index + 1 }));;
+    setCategories(newCategories);
+  }
+
   return (
-    <CategoryContext.Provider value={{ categories, addCategory, addPersonToCategory }}>
+    <CategoryContext.Provider value={{ categories, addCategory, addPersonToCategory, deleteCategory }}>
       {children}
     </CategoryContext.Provider>
   );

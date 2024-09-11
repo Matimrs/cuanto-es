@@ -22,21 +22,21 @@ export const AddPersonBox = () => {
     >
       <div className="column is-four-fifths ">
         <div className="field">
-          <label className="label">Name</label>
+          <label className="label">Persona</label>
           <div className="control">
             <input
               ref={inputNameRef}
               id="inputName"
               className="input"
               type="text"
-              placeholder="Name"
+              placeholder="Nombre"
               value={name}
               onChange={handleNameChange}
               onKeyDown={handleEnter}
               required
             />
             {!flagName && (
-              <span className="tag is-danger is-light">Name is necessary</span>
+              <span className="tag is-danger is-light">Nombre necesario</span>
             )}
           </div>
         </div>
@@ -48,7 +48,7 @@ export const AddPersonBox = () => {
           onClick={handlePersons}
           onKeyDown={handleEnter}
         >
-          Add
+          Agregar
         </button>
       </div>
     </div>
