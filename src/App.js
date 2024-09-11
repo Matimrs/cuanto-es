@@ -1,7 +1,7 @@
 import { NavBar } from "./components/NavBar/NavBar";
-import { MainContainer } from "./components/MainContainer/MainContainer"
+import { MainContainer } from "./components/MainContainer/MainContainer";
 import { CategoryContainer } from "./components/Category/CategoryContainer/CategoryContainer";
-import { ResultContainer } from "./components/Result/ResultContainer/ResultContainer"
+import { ResultContainer } from "./components/Result/ResultContainer/ResultContainer";
 import { Footer } from "./components/Footer/Footer";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { CategoryProvider } from "./context/CategoryContext";
@@ -11,49 +11,24 @@ import { ResultProvider } from "./context/ResultContext";
 import { CategoryDetails } from "./components/Category/CategoryDetails/CategoryDetails";
 
 function App() {
- 
   return (
     <div className="App" style={{ height: "100vh" }}>
       <BrowserRouter>
-      <ResultProvider>
-        <ScreenProvider>
-          <CategoryProvider>
+        <ResultProvider>
+          <ScreenProvider>
             <PersonProvider>
-              <NavBar/>
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <MainContainer
-                    />
-                  }
-                />
-                <Route
-                  path="/categorys"
-                  element={
-                    <CategoryContainer
-                    />
-                  }
-                />
-                <Route
-                  path="/categorys/:id"
-                  element={
-                    <CategoryDetails
-                    />
-                  }
-                />
-                <Route
-                  path="/result"
-                  element={
-                    <ResultContainer
-                    />
-                  }
-                />
-              </Routes>
-              <Footer />
+              <CategoryProvider>
+                <NavBar />
+                <Routes>
+                  <Route path="/" element={<MainContainer />} />
+                  <Route path="/categorys" element={<CategoryContainer />} />
+                  <Route path="/categorys/:id" element={<CategoryDetails />} />
+                  <Route path="/result" element={<ResultContainer />} />
+                </Routes>
+                <Footer />
+              </CategoryProvider>
             </PersonProvider>
-          </CategoryProvider>
-        </ScreenProvider>
+          </ScreenProvider>
         </ResultProvider>
       </BrowserRouter>
     </div>

@@ -34,6 +34,10 @@ const PersonProvider = ({ children }) => {
     } 
   };
 
+  const getPerson = (personId) => {
+    return persons.find(p => p.id === Number(personId));
+  } 
+
   // Función para agregar una nueva persona
   const addPerson = (person) => {
     setPersons([...persons, person]);
@@ -59,6 +63,7 @@ const PersonProvider = ({ children }) => {
       value={{
         persons,
         handlePersons,
+        getPerson,
         removePerson,
         updatePerson,
         handleNameChange,
