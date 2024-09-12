@@ -2,8 +2,8 @@ import idGenerator from "../utils/idGenerator";
 import Peer from "./Peer";
 
 class Category {
-  constructor(categorys, name) {
-    this.id = idGenerator(categorys);
+  constructor(categorys, name, id = null) {
+    this.id = id || idGenerator(categorys);
     this.name = name;
     this.persons = []; // objetos del tipo Person + atributo 'gasto'
   }
@@ -11,6 +11,15 @@ class Category {
   addPerson(person, gasto) {
     this.persons.push({ ...person, gasto });
     return this;
+  }
+
+  total() {
+    let sum = 0;
+    this.persons.forEach((e) => {
+      sum += e.gasto;
+    });
+
+    return sum;
   }
 
   average() {
@@ -29,30 +38,34 @@ class Category {
     let result = [];
 
     this.persons.forEach((p) => {
+      const pCopy = { ...p };
       let i = 0;
 
-      while (i < this.persons.length && p.gasto > avg) {
+      while (i < this.persons.length && pCopy.gasto > avg) {
         const p2 = this.persons[i];
 
-        if (p2 !== p) {
-          if (p2.gasto < avg) {
+        if (p2 !== pCopy) {
+          const p2Copy = { ...p2 };
+
+          if (p2Copy.gasto < avg) {
             let amount = 0;
-            const dist1 = p.gasto - avg;
-            const dist2 = avg - p2.gasto;
+            const dist1 = pCopy.gasto - avg;
+            const dist2 = avg - p2Copy.gasto;
+
             if (dist1 > dist2) {
               amount = dist2;
-              p2.gasto += amount;
-              p.gasto -= amount;
+              p2Copy.gasto += amount;
+              pCopy.gasto -= amount;
             } else if (dist1 < dist2) {
               amount = dist1;
-              p2.gasto += amount;
-              p.gasto -= amount;
+              p2Copy.gasto += amount;
+              pCopy.gasto -= amount;
             } else {
               amount = dist1;
-              p2.gasto += amount;
-              p.gasto -= amount;
+              p2Copy.gasto += amount;
+              pCopy.gasto -= amount;
             }
-            result.push(new Peer(p, p2, amount));
+            result.push(new Peer(pCopy, p2Copy, amount));
           }
         }
 

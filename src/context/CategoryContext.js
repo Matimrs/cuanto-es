@@ -9,22 +9,21 @@ const CategoryProvider = ({ children }) => {
 
   const { persons } = useContext(PersonContext);
 
+  const getCategories = () => {
+    return categories;
+  };
+
   const getCategory = (categoryId) => {
-    console.log(categories);
     return categories.find((category) => category.id === Number(categoryId));
   };
 
   const addDefaultCategory = () => {
-    const category = new Category([], "Categoria por defecto");
-    persons.forEach((person) => {
-      category.persons.push({ ...person, gasto: 0 });
-    });
+    const category = new Category([], "Categoria por defecto", persons);
     setCategories([category]);
   };
 
   const addCategory = (categoryName) => {
-    const category = new Category(categories, categoryName);
-    setCategories((prevCategories) => [...prevCategories, category]);
+    setCategories((prevCategories) => [...prevCategories, new Category(prevCategories, categoryName)]);
   };
 
   const deleteCategory = (categoryId) => {
@@ -39,8 +38,8 @@ const CategoryProvider = ({ children }) => {
     setCategories(
       categories.map((category) => {
         if (category.id === Number(categoryId)) {
-          const updatedCategory = {...category};
-          updatedCategory.addPerson(person, gasto);
+          const updatedCategory = new Category([], category.name, category.id);
+          updatedCategory.persons = [...category.persons, { ...person, gasto: Number(gasto) }];
           return updatedCategory;
         }
         return category;
@@ -53,12 +52,10 @@ const CategoryProvider = ({ children }) => {
     setCategories((prevCategories) =>
       prevCategories.map((category) => {
         if (category.id === Number(categoryId)) {
-          const updatedCategory = {
-            ...category,
-            persons: category.persons.map((person) =>
-              person.id === newPerson.id ? newPerson : person
-            ),
-          };
+          const updatedCategory = new Category([], category.name, category.id);
+          updatedCategory.persons = category.persons.map((person) =>
+            person.id === newPerson.id ? newPerson : person
+          );
           return updatedCategory;
         }
         return category;
@@ -84,6 +81,7 @@ const CategoryProvider = ({ children }) => {
   return (
     <CategoryContext.Provider
       value={{
+        getCategories,
         categories,
         getCategory,
         addCategory,

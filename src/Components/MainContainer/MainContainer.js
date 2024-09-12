@@ -1,6 +1,6 @@
 import { PersonList } from "../Person/PersonList/PersonList";
 import { AddPersonBox } from "../Person/AddPersonBox/AddPersonBox";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ScreenContext } from "../../context/ScreenContext";
 import { PersonContext } from "../../context/PersonContext";
 import { useNavigate } from "react-router-dom";
@@ -15,12 +15,24 @@ export const MainContainer = () => {
 
   const { persons } = useContext(PersonContext);
 
-  const {addDefaultCategory} = useContext(CategoryContext)
+  const { addDefaultCategory } = useContext(CategoryContext)
+
+  const { getCategories } = useContext(CategoryContext);
+
+  const [categories, setCategories] = useState(null);
 
   const [ continueMessage, setContinueMessage ] = useState(false);
 
+  useEffect(() => {
+    
+    setCategories(getCategories());
+
+  }, [])
+
   const handleContinue = () => {
-    setContinueMessage(true);
+    if(categories?.some(category => (category.name === "Categoria por defecto" && category.id === 1))) navigate("/categorys/1");
+    else if(categories.length !== 0) navigate("/categorys");
+    else setContinueMessage(true);
   };
 
   const HandleContinueWithOneCategory = () => {

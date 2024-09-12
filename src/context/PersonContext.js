@@ -1,11 +1,9 @@
 import { createContext, useState, useRef, useContext } from "react";
-import { ResultContext } from "./ResultContext";
 import Person from "../classes/Person";
 const PersonContext = createContext();
 
 // Proveedor del contexto para las personas
 const PersonProvider = ({ children }) => {
-  const { setResult } = useContext(ResultContext);
 
   const [name, setName] = useState("");
 
@@ -25,7 +23,6 @@ const PersonProvider = ({ children }) => {
     if (name.length > 0) {
       let person = new Person(name, persons);
       addPerson(person);
-      setResult([]);
       setName("");
       inputNameRef.current.focus();
     } else {

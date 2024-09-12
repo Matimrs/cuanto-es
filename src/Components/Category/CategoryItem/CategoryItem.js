@@ -15,7 +15,7 @@ export const CategoryItem = ({ id, name, persons }) => {
   };
 
   const handleClick = () => {
-    navigate(`/category/${id}`);
+    navigate(`/categorys/${id}`);
   };
 
   return (
@@ -36,10 +36,11 @@ export const CategoryItem = ({ id, name, persons }) => {
       <div className="message-body" onClick={handleClick}>
         <div className="has-text-centered">
           {name}
+          <br/>
             <div className="icon">
               <i className="fas fa-people-group"></i>
             </div>
-          {quantity}
+          {}: {quantity}
         </div>
       </div>
     </div>

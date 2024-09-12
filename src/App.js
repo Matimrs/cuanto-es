@@ -14,10 +14,12 @@ function App() {
   return (
     <div className="App" style={{ height: "100vh" }}>
       <BrowserRouter>
+      <PersonProvider>
+      <CategoryProvider>
         <ResultProvider>
           <ScreenProvider>
-            <PersonProvider>
-              <CategoryProvider>
+            
+              
                 <NavBar />
                 <Routes>
                   <Route path="/" element={<MainContainer />} />
@@ -26,10 +28,11 @@ function App() {
                   <Route path="/result" element={<ResultContainer />} />
                 </Routes>
                 <Footer />
-              </CategoryProvider>
-            </PersonProvider>
+              
           </ScreenProvider>
         </ResultProvider>
+        </CategoryProvider>
+        </PersonProvider>
       </BrowserRouter>
     </div>
   );

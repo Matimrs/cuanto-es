@@ -1,30 +1,83 @@
-import { useContext, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { CategoryContext } from "../../../context/CategoryContext";
 import { CategoryPersonItem } from "./CategoryPersonItem/CategoryPersonItem";
 import { PersonContext } from "../../../context/PersonContext";
+import { ScreenContext } from "../../../context/ScreenContext";
+
 
 export const CategoryDetails = () => {
-    const { id } = useParams();
+  const { id } = useParams();
 
-    const { getCategory } = useContext(CategoryContext);
+  const navigate = useNavigate();
 
-    const { persons } = useContext(PersonContext);
+    const { isSmallScreen } = useContext(ScreenContext);
 
-    const [category, setCategory] = useState(getCategory(id));
+  const { getCategory } = useContext(CategoryContext);
 
-    if (!category) {
-        return <div>Cargando...</div>; // Mostrar un mensaje o un componente de carga
-      }
+  const { persons } = useContext(PersonContext);
 
-    return (
-        <div>
-            <h2>{category.name}</h2>
-            {persons.map(person => (
-                <CategoryPersonItem categoryId={category.id} personId={person.id}/>
-            )
-            )}
-            
-        </div>
-    )
-}
+  const [category, setCategory] = useState(null);
+
+  useEffect(() => {
+    setCategory(getCategory(id));
+  }, [id]);
+
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
+  const handleAcceptClick = () => {
+    if(category.name === "Categoria por defecto" && category.id === 1) navigate(`/result`);
+    else navigate(`/categorys`);
+  }
+
+  if (!category) {
+    return <div>Cargando...</div>; // Mostrar un mensaje o un componente de carga
+  }
+
+  return (
+    <div
+      className="is-flex is-flex-direction-row is-justify-content-center is-align-items-center"
+      style={{ minHeight: `calc(100% - ${isSmallScreen ? "186" : "126"}px)` }}
+    >
+      <div
+        className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center my-3"
+        style={{ width: "40%", minWidth: "250px" }}
+      >
+        <h2>{category.name}</h2>
+        {persons.map((person) => (
+          <CategoryPersonItem
+            key={person.id}
+            categoryId={category.id}
+            personId={person.id}
+          />
+        ))}
+        <div className="is-flex is-justify-content-space-between" style={{width: '100%'}}>
+                <button
+                  className="button is-outlined mb-3 label"
+                  style={{
+                    boxShadow:
+                      "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+                      width: '45%'
+                  }}
+                  onClick={handleBackClick}
+                >
+                  Volver
+                </button>
+                <button
+                  className="button is-outlined mb-3 label"
+                  style={{
+                    boxShadow:
+                      "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+                      width: '45%'
+                  }}
+                  onClick={handleAcceptClick}
+                >
+                  Calcular
+                </button>
+              </div>
+      </div>
+    </div>
+  );
+};
