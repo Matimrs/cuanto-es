@@ -5,9 +5,10 @@ import { PersonContext } from "./PersonContext";
 const CategoryContext = createContext();
 
 const CategoryProvider = ({ children }) => {
-  const [categories, setCategories] = useState([]);
 
   const { persons } = useContext(PersonContext);
+
+  const [categories, setCategories] = useState([]);
 
   const getCategories = () => {
     return categories;
@@ -18,7 +19,10 @@ const CategoryProvider = ({ children }) => {
   };
 
   const addDefaultCategory = () => {
-    const category = new Category([], "Categoria por defecto", persons);
+    const category = new Category([], "Categoria por defecto");
+    persons.forEach(p => {
+      category.persons.push({ ...p, gasto: 0 });
+    });
     setCategories([category]);
   };
 

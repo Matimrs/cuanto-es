@@ -6,8 +6,6 @@ export const calculate = (categorys) => {
   //temp es un arreglo de objetos del tipo Peer
   let temp = [];
 
-  console.log(categorys);
-
   categorys.forEach((c) => {
   
     temp = temp.concat(c.distribute());

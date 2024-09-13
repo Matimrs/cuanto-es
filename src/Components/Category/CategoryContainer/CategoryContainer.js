@@ -4,15 +4,19 @@ import { ScreenContext } from "../../../context/ScreenContext";
 import { CategoryList } from "../CategoryList/CategoryList";
 import { useNavigate } from "react-router-dom";
 import { CategoryContext } from "../../../context/CategoryContext";
+import { ResultContext } from "../../../context/ResultContext";
 
 export const CategoryContainer = () => {
   const { isSmallScreen } = useContext(ScreenContext);
 
   const { categories } = useContext(CategoryContext);
 
+  const { getResult } = useContext(ResultContext);
+
   const navigate = useNavigate();
 
   const handleContinue = () => {
+    getResult();
     navigate("/result");
   };
 

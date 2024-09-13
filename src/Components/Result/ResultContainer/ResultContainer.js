@@ -1,4 +1,4 @@
-import { useEffect, useContext } from "react";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { ScreenContext } from "../../../context/ScreenContext";
 import { ResultContext } from "../../../context/ResultContext";
@@ -6,19 +6,11 @@ import { ResultItem } from "../ResultItem/ResultItem";
 
 export const ResultContainer = ()=>{
 
-    const { setResultView , result, getResult} = useContext(ResultContext);
+    const { result} = useContext(ResultContext);
 
     const { isSmallScreen } = useContext(ScreenContext);
 
     const navigate = useNavigate();
-
-    useEffect(() => {
-
-        getResult();
-
-        setResultView(true);
-        
-    },[setResultView]);
 
     const handleBackClick = () => {
         navigate(-1);

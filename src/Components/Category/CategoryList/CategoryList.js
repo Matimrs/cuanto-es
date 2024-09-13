@@ -1,15 +1,10 @@
 import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import { CategoryContext } from "../../../context/CategoryContext";
 import { CategoryItem } from "../CategoryItem/CategoryItem"
 
 export const CategoryList = () => {
 
     const {categories} = useContext(CategoryContext);
-
-    const navigate = useNavigate();
-
-   
 
 
     if(categories.length === 0){

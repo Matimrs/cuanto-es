@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useCallback } from "react";
 import { CategoryContext } from "../../../../context/CategoryContext";
 import { PersonContext } from "../../../../context/PersonContext";
 
@@ -18,21 +18,20 @@ export const CategoryPersonItem = ({ categoryId, personId }) => {
   const [isCheck, setIsCheck] = useState(false);
   const [value, setValue] = useState(0);
 
+
   useEffect(() => {
     const fetchedCategory = getCategory(categoryId);
-
     const fetchedPerson = getPerson(personId);
 
+    setCategory(fetchedCategory || null);
+    setPerson(fetchedPerson || null);
+  
     const personInCategory = fetchedCategory?.persons.find(
       (p) => p.id === Number(personId)
     );
-
-    setCategory(fetchedCategory || null);
-
-    setPerson(fetchedPerson || null);
-
+  
     setInCategory(!!personInCategory || false);
-
+  
     if (personInCategory) {
       setIsCheck(true);
       setValue(Number(personInCategory.gasto));
@@ -45,11 +44,9 @@ export const CategoryPersonItem = ({ categoryId, personId }) => {
     if (category && person) {
       if (isCheck) {
         if (inCategory) {
-          const realValue = value || 0;
-          updatePersonInCategory(categoryId, { ...person, gasto: realValue });
+          updatePersonInCategory(categoryId, { ...person, gasto: value || 0 });
         } else {
-          const realValue = value || 0;
-          addPersonToCategory(categoryId, person, realValue);
+          addPersonToCategory(categoryId, person, value || 0);
           setInCategory(true);
         }
       } else {
@@ -57,7 +54,7 @@ export const CategoryPersonItem = ({ categoryId, personId }) => {
         setInCategory(false);
       }
     }
-  }, [isCheck, value, category, person, inCategory]);
+  }, [isCheck, value]);
 
   const handleValueChange = (e) => {
     if (e.target.value !== "" || e.target.value !== undefined)

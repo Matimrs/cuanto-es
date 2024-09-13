@@ -4,6 +4,7 @@ import { CategoryContext } from "../../../context/CategoryContext";
 import { CategoryPersonItem } from "./CategoryPersonItem/CategoryPersonItem";
 import { PersonContext } from "../../../context/PersonContext";
 import { ScreenContext } from "../../../context/ScreenContext";
+import { ResultContext } from "../../../context/ResultContext";
 
 
 export const CategoryDetails = () => {
@@ -17,18 +18,23 @@ export const CategoryDetails = () => {
 
   const { persons } = useContext(PersonContext);
 
+  const { getResult } = useContext(ResultContext);
+
   const [category, setCategory] = useState(null);
 
   useEffect(() => {
     setCategory(getCategory(id));
-  }, [id]);
+  }, [id, getCategory]);
 
   const handleBackClick = () => {
     navigate(-1);
   };
 
   const handleAcceptClick = () => {
-    if(category.name === "Categoria por defecto" && category.id === 1) navigate(`/result`);
+    if(category.name === "Categoria por defecto" && category.id === 1) {
+      getResult();
+      navigate(`/result`);
+    }
     else navigate(`/categorys`);
   }
 
@@ -74,7 +80,7 @@ export const CategoryDetails = () => {
                   }}
                   onClick={handleAcceptClick}
                 >
-                  Calcular
+                  Aceptar
                 </button>
               </div>
       </div>
