@@ -39,6 +39,7 @@ export const CategoryPersonItem = ({ categoryId, personId }) => {
       setIsCheck(false);
     }
   }, [categoryId, personId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (category && person) {
@@ -55,6 +56,7 @@ export const CategoryPersonItem = ({ categoryId, personId }) => {
       }
     }
   }, [isCheck, value]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 
   const handleValueChange = (e) => {
     if (e.target.value !== "" || e.target.value !== undefined)

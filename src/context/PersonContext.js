@@ -1,4 +1,4 @@
-import { createContext, useState, useRef, useContext } from "react";
+import { createContext, useState, useRef} from "react";
 import Person from "../classes/Person";
 const PersonContext = createContext();
 
