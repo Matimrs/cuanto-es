@@ -12,9 +12,9 @@ export const CategoryList = () => {
     }
 
     return (
-        <div className="is-flex is-flex-direction-row is-justify-content-space-around is-align-items-center is-flex-wrap-wrap mb-3" style={{width: '100%'}}>
+        <div className="is-flex is-flex-direction-row is-justify-content-space-around is-align-items-center is-flex-wrap-wrap my-3" style={{width: '100%'}}>
             {categories.map(category => (
-                <CategoryItem key={category.id} id={category.id} name={category.name} persons={category.persons} />))}
+                <CategoryItem key={category.id} id={category.id} name={category.name.toUpperCase()} persons={category.persons} />))}
         </div>
     )
 }

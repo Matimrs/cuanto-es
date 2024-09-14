@@ -31,6 +31,7 @@ export const CategoryContainer = () => {
     >
       <div style={{ width: "40%", minWidth: "250px", paddingTop: "10px" }}>
         <div className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
+        <h2 className="is-size-3 has-text-weight-bold mb-5" style={{color: 'black'}}>CATEGORIAS</h2>
           <AddCategoryBox />
           <CategoryList />
           {(categories.length === 0 ||
@@ -51,7 +52,7 @@ export const CategoryContainer = () => {
                   className="button is-dark mb-3 label"
                   style={{
                     boxShadow:
-                      "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+                      "0 0 0.3em 0.025em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
                       width: '45%'
                   }}
                   onClick={handleBackClick}
@@ -62,7 +63,7 @@ export const CategoryContainer = () => {
                   className="button is-outlined mb-3 label"
                   style={{
                     boxShadow:
-                      "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+                      "0 0 0.3em 0.025em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
                       width: '45%'
                   }}
                   onClick={handleContinue}

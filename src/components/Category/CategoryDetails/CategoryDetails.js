@@ -85,10 +85,10 @@ export const CategoryDetails = () => {
           style={{ width: "100%" }}
         >
           <button
-            className="button is-outlined mb-3 label"
+            className="button is-dark mb-3 label"
             style={{
               boxShadow:
-                "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+                "0 0 0.3em 0.015em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
               width: "45%",
             }}
             onClick={handleBackClick}
@@ -99,7 +99,7 @@ export const CategoryDetails = () => {
             className="button is-outlined mb-3 label"
             style={{
               boxShadow:
-                "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+                "0 0 0.3em 0.025em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
               width: "45%",
             }}
             onClick={handleAcceptClick}

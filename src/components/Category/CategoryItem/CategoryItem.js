@@ -19,7 +19,7 @@ export const CategoryItem = ({ id, name, persons }) => {
   };
 
   return (
-    <div className="message is-dark m-3" style={{ width: "120px" }}>
+    <div className="message is-dark m-3" style={{ width: "120px", cursor:'pointer' }}>
       <div className="message-header ">
         <p
           className="mr-2 is-truncated"
@@ -35,8 +35,7 @@ export const CategoryItem = ({ id, name, persons }) => {
       </div>
       <div className="message-body" onClick={handleClick}>
         <div className="has-text-centered">
-          {name}
-          <br/>
+          <h3 className="is-size-6 has-text-weight-bold">{name}</h3>
             <div className="icon">
               <i className="fas fa-people-group"></i>
             </div>

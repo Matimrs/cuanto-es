@@ -30,21 +30,24 @@ export const AddCategoryBox = () => {
 
   return (
     <div
-      className="box container columns mb-4 mx-0 mt-0"
+      className="box container columns m-0"
       style={{
         width: "100%",
+        height: "200px",
         boxShadow:
-          "0 0 0.8em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+          "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
       }}
     >
-      <div className="column is-four-fifths ">
-        <div className="field">
-          <label className="label">Categoria</label>
+      <div className="column is-9 is-flex is-flex-direction-column is-justify-content-center is-align-items-center" style={{paddingRight: '22px'}}>
+        <div className="field" style={{width:'100%'}}>
+          <label className="label">Agregar categoria</label>
           <div className="control">
             <input
               id="inputName"
               className="input"
+              style={{marginBottom: `${flagCategory ? '32px' : '0px'}`}}
               type="text"
+              name="category"
               placeholder="Categoria"
               value={category}
               onChange={handleCategoryNameChange}
@@ -52,14 +55,14 @@ export const AddCategoryBox = () => {
               required
             />
             {!flagCategory && (
-              <span className="tag is-danger is-light">
+              <span className="tag is-danger is-light mt-2" style={{height:'24px'}}>
                 Categoria necesaria
               </span>
             )}
           </div>
         </div>
       </div>
-      <div className="column is-one-fifths is-flex is-flex-direction-row is-justify-content-center is-align-items-center">
+      <div className="column is-3 is-flex is-flex-direction-row is-justify-content-center is-align-items-center" style={{paddingLeft:'22px'}}>
         <button
           className="button is-dark pt-1"
           type="submit"
@@ -68,7 +71,6 @@ export const AddCategoryBox = () => {
         >
           Agregar
         </button>
-              
       </div>
     </div>
   );

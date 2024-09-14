@@ -51,6 +51,7 @@ export const MainContainer = () => {
       <div style={{ width: "40%", minWidth: "250px", paddingTop: "10px" }}>
         {!continueMessage && (
           <div className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
+            <h2 className="is-size-3 has-text-weight-bold mb-5" style={{color: 'black'}}>PERSONAS</h2>
             <AddPersonBox />
             <PersonList />
             {persons.length > 1 && (
@@ -58,7 +59,7 @@ export const MainContainer = () => {
                 className="button is-outlined is-fullwidth mb-3 label"
                 style={{
                   boxShadow:
-                    "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+                    "0 0 0.3em 0.025em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
                 }}
                 onClick={handleContinue}
               >
@@ -68,19 +69,19 @@ export const MainContainer = () => {
           </div>
         )}
         {continueMessage && (
-          <div className="message is-black container my-5 p-2" style={{width: '100%', textAlign: 'center'}}>
+          <div className="message is-black container my-5 p-2" style={{width: '70%', textAlign: 'center'}}>
             <h2 className="m-3">Desea dividir los gastos en categorias?</h2>
             <div className="is-flex is-flex-direction-row is-justify-content-space-between is-align-items-center">
-              <button className="button is-outlined m-3 label"
+              <button className="button is-dark m-3 label"
                   style={{
                     boxShadow:
-                      "0 0 0.5em 0.025em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+                      "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
                       width: '45%'
                   }} onClick={HandleContinueWithOneCategory}>No</button>
               <button className="button is-outlined m-3 label"
                   style={{
                     boxShadow:
-                      "0 0 0.5em 0.025em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+                      "0 0 0.3em 0.025em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
                       width: '45%'
                   }} onClick={HandleContinueWithMultipleCategories}>Si</button>
             </div>

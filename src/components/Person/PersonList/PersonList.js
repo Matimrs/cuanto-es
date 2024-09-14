@@ -6,7 +6,7 @@ export const PersonList = ()=>{
 
     const {persons} = useContext(PersonContext);
 return(
-    <div id="personList" className="is-flex is-flex-direction-row is-justify-content-space-around is-align-items-center is-flex-wrap-wrap mb-3" style={{width: '100%'}}>
+    <div id="personList" className="is-flex is-flex-direction-row is-justify-content-space-around is-align-items-center is-flex-wrap-wrap my-3" style={{width: '100%'}}>
       {persons.map(e=>{
             return (
                 <PersonItem key={e.id} {...e}/>
