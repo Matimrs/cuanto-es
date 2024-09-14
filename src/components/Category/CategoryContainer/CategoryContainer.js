@@ -35,7 +35,7 @@ export const CategoryContainer = () => {
           <CategoryList />
           {(categories.length === 0 ||
             !categories.every((category) => category.persons.length >= 2)) && (<button
-            className="button is-outlined is-fullwidth mb-3 label"
+            className="button is-dark is-fullwidth mb-3 label"
             style={{
               boxShadow:
                 "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
@@ -48,7 +48,7 @@ export const CategoryContainer = () => {
             categories.every((category) => category.persons.length >= 2) && (
               <div className="is-flex is-justify-content-space-between" style={{width: '100%'}}>
                 <button
-                  className="button is-outlined mb-3 label"
+                  className="button is-dark mb-3 label"
                   style={{
                     boxShadow:
                       "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",

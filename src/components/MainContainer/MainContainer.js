@@ -68,11 +68,21 @@ export const MainContainer = () => {
           </div>
         )}
         {continueMessage && (
-          <div>
-            <h3>Desea dividir los gastos en categorias?</h3>
+          <div className="message is-black container my-5 p-2" style={{width: '100%', textAlign: 'center'}}>
+            <h2 className="m-3">Desea dividir los gastos en categorias?</h2>
             <div className="is-flex is-flex-direction-row is-justify-content-space-between is-align-items-center">
-              <button onClick={HandleContinueWithOneCategory}>No</button>
-              <button onClick={HandleContinueWithMultipleCategories}>Si</button>
+              <button className="button is-outlined m-3 label"
+                  style={{
+                    boxShadow:
+                      "0 0 0.5em 0.025em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+                      width: '45%'
+                  }} onClick={HandleContinueWithOneCategory}>No</button>
+              <button className="button is-outlined m-3 label"
+                  style={{
+                    boxShadow:
+                      "0 0 0.5em 0.025em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+                      width: '45%'
+                  }} onClick={HandleContinueWithMultipleCategories}>Si</button>
             </div>
           </div>
         )}

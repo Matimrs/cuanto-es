@@ -6,13 +6,12 @@ import { PersonContext } from "../../../context/PersonContext";
 import { ScreenContext } from "../../../context/ScreenContext";
 import { ResultContext } from "../../../context/ResultContext";
 
-
 export const CategoryDetails = () => {
   const { id } = useParams();
 
   const navigate = useNavigate();
 
-    const { isSmallScreen } = useContext(ScreenContext);
+  const { isSmallScreen } = useContext(ScreenContext);
 
   const { getCategory } = useContext(CategoryContext);
 
@@ -31,15 +30,37 @@ export const CategoryDetails = () => {
   };
 
   const handleAcceptClick = () => {
-    if(category.name === "Categoria por defecto" && category.id === 1) {
+    if (category.name === "Categoria por defecto" && category.id === 1) {
       getResult();
       navigate(`/result`);
-    }
-    else navigate(`/categorys`);
-  }
+    } else navigate(`/categorys`);
+  };
 
   if (!category) {
-    return <div>Cargando...</div>; // Mostrar un mensaje o un componente de carga
+    return (
+      <div
+        className="is-flex is-flex-direction-row is-justify-content-center is-align-items-center"
+        style={{ minHeight: `calc(100% - ${isSmallScreen ? "186" : "126"}px)` }}
+      >
+        <div
+          className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center my-3"
+          style={{ width: "40%", minWidth: "250px" }}
+        >
+          <h2 className="is-size-4">No existe esta categoria!</h2>
+          <button
+            className="button is-dark mt-3 label"
+            style={{
+              boxShadow:
+                "0 0 0.5em 0.025em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+                width: "120px"
+            }}
+            onClick={handleBackClick}
+          >
+            Volver
+          </button>
+        </div>
+      </div>
+    ); // Mostrar un mensaje o un componente de carga
   }
 
   return (
@@ -59,30 +80,33 @@ export const CategoryDetails = () => {
             personId={person.id}
           />
         ))}
-        <div className="is-flex is-justify-content-space-between" style={{width: '100%'}}>
-                <button
-                  className="button is-outlined mb-3 label"
-                  style={{
-                    boxShadow:
-                      "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
-                      width: '45%'
-                  }}
-                  onClick={handleBackClick}
-                >
-                  Volver
-                </button>
-                <button
-                  className="button is-outlined mb-3 label"
-                  style={{
-                    boxShadow:
-                      "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
-                      width: '45%'
-                  }}
-                  onClick={handleAcceptClick}
-                >
-                  Aceptar
-                </button>
-              </div>
+        <div
+          className="is-flex is-justify-content-space-between"
+          style={{ width: "100%" }}
+        >
+          <button
+            className="button is-outlined mb-3 label"
+            style={{
+              boxShadow:
+                "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+              width: "45%",
+            }}
+            onClick={handleBackClick}
+          >
+            Volver
+          </button>
+          <button
+            className="button is-outlined mb-3 label"
+            style={{
+              boxShadow:
+                "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+              width: "45%",
+            }}
+            onClick={handleAcceptClick}
+          >
+            Aceptar
+          </button>
+        </div>
       </div>
     </div>
   );

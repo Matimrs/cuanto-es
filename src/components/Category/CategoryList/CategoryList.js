@@ -8,7 +8,7 @@ export const CategoryList = () => {
 
 
     if(categories.length === 0){
-        return <div>Cargando...</div>
+        return <div className="m-3"></div>
     }
 
     return (
