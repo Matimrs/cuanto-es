@@ -3,13 +3,16 @@ import Peer from "../classes/Peer";
 //persons y categorys son arreglos
 
 export const calculate = (categorys) => {
+
   //temp es un arreglo de objetos del tipo Peer
   let temp = [];
 
   categorys.forEach((c) => {
   
     temp = temp.concat(c.distribute());
+
   });
+
 
   //UNIFICAR PAGOS:
 
@@ -47,8 +50,10 @@ export const calculate = (categorys) => {
       } else if (amount < 0) {
         result.push(new Peer(debtor, creditor, -amount));
       }
+      else toRemove.push(p.id);
     }
   });
+
   return result;
 };
 

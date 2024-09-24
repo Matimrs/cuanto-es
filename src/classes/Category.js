@@ -8,6 +8,10 @@ class Category {
     this.persons = []; // objetos del tipo Person + atributo 'gasto'
   }
 
+  getPersons(){
+    return [...this.persons];
+  }
+
   addPerson(person, gasto) {
     this.persons.push({ ...person, gasto });
     return this;
@@ -37,15 +41,16 @@ class Category {
 
     let result = [];
 
-    this.persons.forEach((p) => {
-      const pCopy = { ...p };
+    const personsCopy = this.getPersons().map(person => ({ ...person }));
+
+    personsCopy.forEach((p) => {
+      const pCopy = p;
       let i = 0;
 
-      while (i < this.persons.length && pCopy.gasto > avg) {
-        const p2 = this.persons[i];
+      while (i < personsCopy.length && pCopy.gasto > avg) {
+        const p2Copy = personsCopy[i];
 
-        if (p2 !== pCopy) {
-          const p2Copy = { ...p2 };
+        if (p2Copy.id !== pCopy.id) {
 
           if (p2Copy.gasto < avg) {
             let amount = 0;

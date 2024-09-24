@@ -1,9 +1,12 @@
 import { useContext } from "react";
 import { PersonContext } from "../../../context/PersonContext";
+import { ScreenContext } from "../../../context/ScreenContext";
 
 export const AddPersonBox = () => {
 
   const { handlePersons, inputNameRef, name, handleNameChange, flagName} = useContext(PersonContext);
+
+  const {isSmallScreen} = useContext(ScreenContext);
 
   const handleEnter = (e) => {
     if (e.key === "Enter") {
@@ -11,9 +14,15 @@ export const AddPersonBox = () => {
     }
   }
 
+  const divContainerClassNames = isSmallScreen ? "box container is-flex is-flex-direction-column is-justify-content-center is-align-items-center" : "box container columns m-0";
+
+  const divAgregarStyle = isSmallScreen ?  {marginBottom: '16px'} : {paddingLeft: '22px'};
+
+  const divAgregarClassNames = isSmallScreen ? "is-flex is-justify-content-center is-align-items-center]" : "column is-3 is-flex is-justify-content-center is-align-items-center"
+
   return (
     <div
-      className="box container columns m-0"
+      className={divContainerClassNames}
       style={{
         width: "100%",
         height: "200px",
@@ -44,7 +53,7 @@ export const AddPersonBox = () => {
           </div>
         </div>
       </div>
-      <div className="column is-3 is-flex is-flex-direction-row is-justify-content-center is-align-items-center" style={{paddingLeft:'22px'}}>
+      <div className={divAgregarClassNames} style={divAgregarStyle}>
         <button
           className="button is-dark pt-1"
           type="submit"

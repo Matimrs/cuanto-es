@@ -60,8 +60,15 @@ export const CategoryPersonItem = ({ categoryId, personId }) => {
   }, [isCheck, value]);
 
   const handleValueChange = (e) => {
-    if (e.target.value !== "" || e.target.value !== undefined)
-      setValue(Number(e.target.value));
+    const newValue = e.target.value;
+    setValue(newValue === "" ? "" : Number(newValue));
+  };
+
+  const handleBlur = () => {
+    // Al perder el foco, si el valor está vacío, establecer 0
+    if (value === "" || isNaN(value)) {
+      setValue(0);
+    }
   };
 
   const handleCheckChange = () => {
@@ -88,8 +95,9 @@ export const CategoryPersonItem = ({ categoryId, personId }) => {
         <input
           type="number"
           placeholder="Gasto"
-          value={value || ""}
+          value={value}
           onChange={handleValueChange}
+          onBlur={handleBlur}
           disabled={!isCheck}
         ></input>
       </div>
