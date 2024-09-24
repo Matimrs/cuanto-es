@@ -19,7 +19,8 @@ export const ResultContainer = ()=>{
     return(
         <div className="is-flex is-flex-direction-row is-justify-content-center is-align-items-center" style={{minHeight: `calc(100% - ${(isSmallScreen)? "186" : "126"}px)`}}>
             <div className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center my-3" style={{width: '40%', minWidth: '250px' }}>
-                {result.length === 0 ? <h3>Nadie debe nada!</h3> :
+                {result.length === 0 ? <h2 className="is-size-3 has-text-weight-bold mb-5"
+            style={{ color: "black", textAlign: "center" }}>Nadie debe nada!</h2> :
                     result.map((peer, idx) => {
                         return <ResultItem key={idx} peer={peer}/>
                     })

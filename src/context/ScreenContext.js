@@ -4,11 +4,11 @@ const ScreenContext =  createContext();
 
 const ScreenProvider = ({ children }) => { 
   const [mainView, setMainView] = useState(true);
-  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 800);
+  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 900);
 
   useEffect(() => {
     const handleResize = () => {
-      setIsSmallScreen(window.innerWidth < 800);
+      setIsSmallScreen(window.innerWidth < 900);
     };
 
     // Agregar event listener cuando el componente se monta

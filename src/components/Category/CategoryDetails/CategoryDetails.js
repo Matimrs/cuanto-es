@@ -46,13 +46,18 @@ export const CategoryDetails = () => {
           className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center my-3"
           style={{ width: "40%", minWidth: "250px" }}
         >
-          <h2 className="is-size-4">No existe esta categoria!</h2>
+          <h2
+            className="is-size-3 has-text-weight-bold mb-5"
+            style={{ color: "black", textAlign: "center" }}
+          >
+            No existe esta categoria!
+          </h2>
           <button
             className="button is-dark mt-3 label"
             style={{
               boxShadow:
                 "0 0 0.5em 0.025em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
-                width: "120px"
+              width: "120px",
             }}
             onClick={handleBackClick}
           >
@@ -72,14 +77,22 @@ export const CategoryDetails = () => {
         className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center my-3"
         style={{ width: "40%", minWidth: "250px" }}
       >
-        <h2>{category.name}</h2>
-        {persons.map((person) => (
-          <CategoryPersonItem
-            key={person.id}
-            categoryId={category.id}
-            personId={person.id}
-          />
-        ))}
+        <h2
+          className="is-size-3 has-text-weight-bold mb-5 has-text-centered"
+          style={{ color: "black" }}
+        >
+          {(category.name === "Categoria por defecto") ? "GASTOS" : category.name.toUpperCase()}
+        </h2>
+        <div style={{width: '100%', marginBottom: '22px'}}>
+          {persons.map((person) => (
+            <CategoryPersonItem
+              key={person.id}
+              categoryId={category.id}
+              personId={person.id}
+            />
+          ))}
+        </div>
+
         <div
           className="is-flex is-justify-content-space-between"
           style={{ width: "100%" }}

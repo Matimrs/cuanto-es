@@ -1,23 +1,31 @@
 import React, { useState } from "react";
 import { CategoryContext } from "../../../context/CategoryContext";
 import { useContext } from "react";
+import { ScreenContext } from "../../../context/ScreenContext";
 export const AddCategoryBox = () => {
   const [category, setCategory] = useState("");
 
   const [flagCategory, setFlagCategory] = useState(true);
+  const [flagCategoryName, setFlagCategoryName] = useState(true);
+
+  const {isSmallScreen} = useContext(ScreenContext);
 
   const { addCategory } = useContext(CategoryContext);
 
   const handleAddCategory = () => {
     if (category.trim().length <= 0) {
       setFlagCategory(false);
-    } else {
+    } else if(category === "Categoria por defecto"){
+      setFlagCategoryName(false);
+    }
+    else {
       addCategory(category);
       setCategory("");
     }
   };
 
   const handleCategoryNameChange = (e) => {
+    setFlagCategoryName(true);
     setFlagCategory(true);
     setCategory(e.target.value);
   };
@@ -28,24 +36,46 @@ export const AddCategoryBox = () => {
     }
   };
 
+  const divContainerClassNames = `box container is-flex ${
+    isSmallScreen
+      ? "is-flex-direction-column is-justify-content-space-between"
+      : "is-flex-direction-row is-justify-content-space-around"
+  }  is-align-items-center`;
+
+  const divContainerStyle = {
+    width: "100%",
+    height: isSmallScreen ? "200px" : "150px",
+    boxShadow:
+      "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+  };
+
+  const divFormClassNames =
+    "is-flex is-flex-direction-column is-justify-content-center is-align-items-center";
+
+    const divFormStyle = isSmallScreen
+    ? {}
+    : { paddingRight: "22px", width: "70%" };
+
+    const divAgregarStyle = isSmallScreen
+    ? { width: "100%" }
+    : { paddingLeft: "22px" };
+
+  const divAgregarClassNames =
+    "is-flex is-justify-content-center is-align-items-center";
+
   return (
     <div
-      className="box container columns m-0"
-      style={{
-        width: "100%",
-        height: "200px",
-        boxShadow:
-          "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
-      }}
+      className={divContainerClassNames}
+      style={divContainerStyle}
     >
-      <div className="column is-9 is-flex is-flex-direction-column is-justify-content-center is-align-items-center" style={{paddingRight: '22px'}}>
+      <div className={divFormClassNames} style={divFormStyle}>
         <div className="field" style={{width:'100%'}}>
           <label className="label">Agregar categoria</label>
           <div className="control">
             <input
               id="inputName"
               className="input"
-              style={{marginBottom: `${flagCategory ? '32px' : '0px'}`}}
+              style={{marginBottom: `${(flagCategory && flagCategoryName) ? '32px' : '0px'}`}}
               type="text"
               name="category"
               placeholder="Categoria"
@@ -54,15 +84,23 @@ export const AddCategoryBox = () => {
               onKeyDown={handleEnter}
               required
             />
-            {!flagCategory && (
+            {(!flagCategory) &&  (
               <span className="tag is-danger is-light mt-2" style={{height:'24px'}}>
-                Categoria necesaria
-              </span>
-            )}
+                Categoria requerida
+               </span>)
+               
+               }
+               {(flagCategory && !flagCategoryName) &&  (
+              <span className="tag is-danger is-light mt-2" style={{height:'24px'}}>
+                Nombre no permitido
+               </span>)
+               
+               }
+            
           </div>
         </div>
       </div>
-      <div className="column is-3 is-flex is-flex-direction-row is-justify-content-center is-align-items-center" style={{paddingLeft:'22px'}}>
+      <div className={divAgregarClassNames} style={divAgregarStyle}>
         <button
           className="button is-dark pt-1"
           type="submit"

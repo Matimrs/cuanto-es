@@ -11,8 +11,12 @@ export const CategoryList = () => {
         return <div className="m-3"></div>
     }
 
+    const divCategoryListClassName = "is-flex is-flex-direction-row is-justify-content-space-around is-align-items-start is-flex-wrap-wrap"
+
+    const divCategoryListStyle = {width: '100%', marginBottom: '24px'};
+
     return (
-        <div className="is-flex is-flex-direction-row is-justify-content-space-around is-align-items-center is-flex-wrap-wrap my-3" style={{width: '100%'}}>
+        <div className={divCategoryListClassName} style={divCategoryListStyle}>
             {categories.map(category => (
                 <CategoryItem key={category.id} id={category.id} name={category.name.toUpperCase()} persons={category.persons} />))}
         </div>

@@ -3,42 +3,55 @@ import { PersonContext } from "../../../context/PersonContext";
 import { ScreenContext } from "../../../context/ScreenContext";
 
 export const AddPersonBox = () => {
+  const { handlePersons, inputNameRef, name, handleNameChange, flagName } =
+    useContext(PersonContext);
 
-  const { handlePersons, inputNameRef, name, handleNameChange, flagName} = useContext(PersonContext);
-
-  const {isSmallScreen} = useContext(ScreenContext);
+  const { isSmallScreen } = useContext(ScreenContext);
 
   const handleEnter = (e) => {
     if (e.key === "Enter") {
       handlePersons();
     }
-  }
+  };
 
-  const divContainerClassNames = isSmallScreen ? "box container is-flex is-flex-direction-column is-justify-content-center is-align-items-center" : "box container columns m-0";
+  const divContainerClassNames = `box container is-flex ${
+    isSmallScreen
+      ? "is-flex-direction-column is-justify-content-space-between"
+      : "is-flex-direction-row is-justify-content-space-around"
+  }  is-align-items-center`;
 
-  const divAgregarStyle = isSmallScreen ?  {marginBottom: '16px'} : {paddingLeft: '22px'};
+  const divContainerStyle = {
+    width: "100%",
+    height: isSmallScreen ? "200px" : "150px",
+    boxShadow:
+      "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
+  };
 
-  const divAgregarClassNames = isSmallScreen ? "is-flex is-justify-content-center is-align-items-center]" : "column is-3 is-flex is-justify-content-center is-align-items-center"
+  const divFormClassNames =
+    "is-flex is-flex-direction-column is-justify-content-center is-align-items-center";
+
+  const divFormStyle = isSmallScreen
+    ? {}
+    : { paddingRight: "22px", width: "70%" };
+
+  const divAgregarStyle = isSmallScreen
+    ? { width: "100%" }
+    : { paddingLeft: "22px" };
+
+  const divAgregarClassNames =
+    "is-flex is-justify-content-center is-align-items-center";
 
   return (
-    <div
-      className={divContainerClassNames}
-      style={{
-        width: "100%",
-        height: "200px",
-        boxShadow:
-          "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
-      }}
-    >
-      <div className="column is-9 is-flex is-flex-direction-column is-justify-content-center is-align-items-center" style={{paddingRight: '22px'}} >
-        <div className="field " style={{width:'100%'}}>
+    <div className={divContainerClassNames} style={divContainerStyle}>
+      <div className={divFormClassNames} style={divFormStyle}>
+        <div className="field " style={{ width: "100%" }}>
           <label className="label">Nueva persona</label>
           <div className="control">
             <input
               ref={inputNameRef}
               id="inputName"
               className="input"
-              style={{marginBottom: `${flagName ? '32px' : '0px'}`}}
+              style={{ marginBottom: `${flagName ? "32px" : "0px"}` }}
               type="text"
               name="name"
               placeholder="Nombre"
@@ -48,7 +61,12 @@ export const AddPersonBox = () => {
               required
             />
             {!flagName && (
-              <span className="tag is-danger is-light mt-2" style={{height:'24px'}}>Nombre necesario</span>
+              <span
+                className="tag is-danger is-light mt-2"
+                style={{ height: "24px" }}
+              >
+                Nombre necesario
+              </span>
             )}
           </div>
         </div>
@@ -62,7 +80,7 @@ export const AddPersonBox = () => {
         >
           Agregar
         </button>
-        </div>
+      </div>
     </div>
   );
 };

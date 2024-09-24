@@ -34,19 +34,6 @@ export const CategoryContainer = () => {
         <h2 className="is-size-3 has-text-weight-bold mb-5" style={{color: 'black'}}>CATEGORIAS</h2>
           <AddCategoryBox />
           <CategoryList />
-          {(categories.length === 0 ||
-            !categories.every((category) => category.persons.length >= 2)) && (<button
-            className="button is-dark is-fullwidth mb-3 label"
-            style={{
-              boxShadow:
-                "0 0 0.5em 0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02)",
-            }}
-            onClick={handleBackClick}
-          >
-            Volver
-          </button>)}
-          {categories.length > 0 &&
-            categories.every((category) => category.persons.length >= 2) && (
               <div className="is-flex is-justify-content-space-between" style={{width: '100%'}}>
                 <button
                   className="button is-dark mb-3 label"
@@ -67,11 +54,11 @@ export const CategoryContainer = () => {
                       width: '45%'
                   }}
                   onClick={handleContinue}
+                  disabled = {categories.length === 0 || !categories.every((category) => category.persons.length >= 2)}
                 >
                   Calcular
                 </button>
               </div>
-            )}
         </div>
       </div>
     </div>

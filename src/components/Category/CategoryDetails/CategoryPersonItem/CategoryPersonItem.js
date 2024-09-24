@@ -1,6 +1,8 @@
-import { useContext, useState, useEffect} from "react";
+import { useContext, useState, useEffect } from "react";
 import { CategoryContext } from "../../../../context/CategoryContext";
 import { PersonContext } from "../../../../context/PersonContext";
+import { ScreenContext } from "../../../../context/ScreenContext";
+import Checkbox from '@mui/material/Checkbox';
 
 export const CategoryPersonItem = ({ categoryId, personId }) => {
   const {
@@ -12,12 +14,13 @@ export const CategoryPersonItem = ({ categoryId, personId }) => {
 
   const { getPerson } = useContext(PersonContext);
 
+  const { isSmallScreen } = useContext(ScreenContext);
+
   const [category, setCategory] = useState(null);
   const [person, setPerson] = useState(null);
   const [inCategory, setInCategory] = useState(false);
   const [isCheck, setIsCheck] = useState(false);
   const [value, setValue] = useState(0);
-
 
   useEffect(() => {
     const fetchedCategory = getCategory(categoryId);
@@ -25,13 +28,13 @@ export const CategoryPersonItem = ({ categoryId, personId }) => {
 
     setCategory(fetchedCategory || null);
     setPerson(fetchedPerson || null);
-  
+
     const personInCategory = fetchedCategory?.persons.find(
       (p) => p.id === Number(personId)
     );
-  
+
     setInCategory(!!personInCategory || false);
-  
+
     if (personInCategory) {
       setIsCheck(true);
       setValue(Number(personInCategory.gasto));
@@ -40,7 +43,6 @@ export const CategoryPersonItem = ({ categoryId, personId }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryId, personId]);
-  
 
   useEffect(() => {
     if (category && person) {
@@ -76,22 +78,43 @@ export const CategoryPersonItem = ({ categoryId, personId }) => {
   };
 
   if (!person || !category) {
-    return <div>Cargando...</div>;
+    return (
+      <div>
+        <h3 style={{ color: "black" }}>Cargando...</h3>
+      </div>
+    );
   }
 
-  return (
-    <div
-      className="is-flex flex-direction-row is-justify-content-space-between"
-      style={{ width: "100%" }}
-    >
-      <h3>{person.name}</h3>
-      <div>
-        <input
-          type="checkbox"
-          checked={isCheck}
-          onChange={handleCheckChange}
-        ></input>
+  const divContainerStyle = {
+        width: "100%",
+        margin: "10px 0",
+        padding: "15px 30px",
+        display: "flex",
+        flexDirection: isSmallScreen ? "column" : "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }
 
+  const divInputsStyle = {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: isSmallScreen ? "100%" : "200px",
+    marginTop: isSmallScreen ? "10px" : "0" ,}
+
+    const h3Style = { color: "black", textAlign: "start", width: isSmallScreen ? '100%' : 'auto', paddingLeft: isSmallScreen ? '12px' : '0'}
+  
+    const inputValueStyle = { width: "100%"}
+    
+  return (
+    <div className="message" style={divContainerStyle}>
+      <h3 style={h3Style}>
+      ({person.id}) <strong>{person.name}</strong> 
+      </h3>
+      <div style={divInputsStyle}>
+      <Checkbox checked={isCheck} onChange={handleCheckChange} color="default" />
+      
         <input
           type="number"
           placeholder="Gasto"
@@ -99,8 +122,12 @@ export const CategoryPersonItem = ({ categoryId, personId }) => {
           onChange={handleValueChange}
           onBlur={handleBlur}
           disabled={!isCheck}
+          style={inputValueStyle}
         ></input>
       </div>
     </div>
   );
 };
+
+
+
