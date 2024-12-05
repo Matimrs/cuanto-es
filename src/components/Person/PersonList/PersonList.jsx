@@ -6,9 +6,9 @@ export const PersonList = ()=>{
 
     const {persons} = useContext(PersonContext);
 
-    const divPersonListClassName = "is-flex is-flex-direction-row is-justify-content-space-around is-align-items-start is-flex-wrap-wrap my-3"
+    const divPersonListClassName = "is-flex is-flex-direction-row is-justify-content-space-around is-flex-wrap-wrap my-3"
 
-    const divPersonListStyle = {width: '100%'};
+    const divPersonListStyle = {width: '100%', alignItems: 'stretch'};
 
     return(
     <div id="personList" className={divPersonListClassName} style={divPersonListStyle}>

@@ -4,7 +4,7 @@ import { PersonContext } from "../../../../context/PersonContext";
 import { ScreenContext } from "../../../../context/ScreenContext";
 import Checkbox from '@mui/material/Checkbox';
 
-export const CategoryPersonItem = ({ categoryId, personId }) => {
+export const CategoryPersonItem = ({ categoryId, personId, isDefaultCategory }) => {
   const {
     getCategory,
     addPersonToCategory,
@@ -63,6 +63,7 @@ export const CategoryPersonItem = ({ categoryId, personId }) => {
 
   const handleValueChange = (e) => {
     const newValue = e.target.value;
+    if(newValue < 0) return;
     setValue(newValue === "" ? "" : Number(newValue));
   };
 
@@ -113,7 +114,7 @@ export const CategoryPersonItem = ({ categoryId, personId }) => {
       ({person.id}) <strong>{person.name}</strong> 
       </h3>
       <div style={divInputsStyle}>
-      <Checkbox checked={isCheck} onChange={handleCheckChange} color="default" />
+      <Checkbox checked={isCheck} disabled={isDefaultCategory} onChange={handleCheckChange} color="default" />
       
         <input
           type="number"

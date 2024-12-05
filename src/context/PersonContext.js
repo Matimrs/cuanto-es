@@ -1,4 +1,4 @@
-import { createContext, useState, useRef} from "react";
+import { createContext, useState, useRef, useEffect} from "react";
 import Person from "../classes/Person";
 const PersonContext = createContext();
 
@@ -30,6 +30,10 @@ const PersonProvider = ({ children }) => {
       inputNameRef.current.focus();
     } 
   };
+
+useEffect(()=>{
+  
+},[persons])
 
   const getPerson = (personId) => {
     return persons.find(p => p.id === Number(personId));

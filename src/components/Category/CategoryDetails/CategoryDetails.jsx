@@ -78,14 +78,20 @@ export const CategoryDetails = () => {
         style={{ width: "40%", minWidth: "250px" }}
       >
         <h2
-          className="is-size-3 has-text-weight-bold mb-5 has-text-centered"
+          className="is-size-3 has-text-weight-bold has-text-centered"
           style={{ color: "black" }}
         >
-          {(category.name === "Categoria por defecto") ? "GASTOS" : category.name.toUpperCase()}
+          {category.name === "Categoria por defecto"
+            ? "GASTOS"
+            : category.name.toUpperCase()}
         </h2>
-        <div style={{width: '100%', marginBottom: '22px'}}>
+        <div className="message-body" style={{ width:'100%', textAlign: "center" }}>
+          Ingrese los gastos de cada persona.<br></br> En caso de que no haya gastado, deje el campo en cero o vacio.
+        </div>
+        <div style={{ width: "100%", marginBottom: "22px" }}>
           {persons.map((person) => (
             <CategoryPersonItem
+              isDefaultCategory={category.name === "Categoria por defecto"}
               key={person.id}
               categoryId={category.id}
               personId={person.id}

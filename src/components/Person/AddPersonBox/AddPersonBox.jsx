@@ -45,7 +45,7 @@ export const AddPersonBox = () => {
     <div className={divContainerClassNames} style={divContainerStyle}>
       <div className={divFormClassNames} style={divFormStyle}>
         <div className="field " style={{ width: "100%" }}>
-          <label className="label">Nueva persona</label>
+          <label className="label">Agregar persona</label>
           <div className="control">
             <input
               ref={inputNameRef}

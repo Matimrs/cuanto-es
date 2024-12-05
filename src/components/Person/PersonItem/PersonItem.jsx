@@ -10,13 +10,11 @@ export const PersonItem = ({ id, name }) => {
     removePerson(id);
   };
 
-  const divMessageStyle = {
-    width: isSmallScreen ? "100px" : "120px",
-    height: "100%",
-  };
-
   return (
-    <div className="message is-dark m-3" style={divMessageStyle}>
+    <div className="message is-dark m-3" style={{
+      width: isSmallScreen ? "100px" : "120px",
+      height: "100%!important",
+    }}>
       <div className="message-header ">
         <p
           className="mr-2 is-truncated"
@@ -31,8 +29,8 @@ export const PersonItem = ({ id, name }) => {
         ></button>
       </div>
       <div
-        className="message-body has-text-centered"
-        style={{ height: "100%" }}
+        className="message-body"
+        style={{display:'flex', justifyContent: 'center', alignItems:'center', width: "100%", textAlign: "center" }}
       >
         <div>{name}</div>
       </div>
