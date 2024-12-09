@@ -7,6 +7,12 @@ class Peer {
     this.debtor = debtor;
     this.amount = amount;
   }
+  decrement(amount) {
+    this.amount -= amount;
+  }
+  increment(amount) {
+    this.amount += amount;
+  }
 }
 
 export default Peer;
