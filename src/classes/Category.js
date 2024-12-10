@@ -79,6 +79,10 @@ class Category {
     });
     return result;
   }
+
+  updateIndex(newIndex) {
+    this.id = newIndex;
+  }
 }
 
 export default Category;

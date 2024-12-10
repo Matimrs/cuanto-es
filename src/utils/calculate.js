@@ -49,8 +49,6 @@ export const calculate = (categorys) => {
     }
   });
 
-  console.log(resultTemp);
-
   const result = deleteChain(resultTemp);
 
   return result;
@@ -91,7 +89,6 @@ const deleteChain = (resultTemp) => {
       }
     });
   }
-  console.log(array);
   return array;
 };
 

@@ -8,7 +8,7 @@ const CategoryProvider = ({ children }) => {
 
   const { persons } = useContext(PersonContext);
 
-  const [categories, setCategories] = useState([]);
+  const [ categories, setCategories ] = useState([]);
 
   const getCategories = () => {
     return categories;
@@ -33,14 +33,14 @@ const CategoryProvider = ({ children }) => {
   const deleteCategory = (categoryId) => {
     const newCategories = categories
       .filter((category) => category.id !== Number(categoryId))
-      .map((category, index) => ({ ...category, id: index + 1 }));
+      .map((category, index) => (category.updateIndex(index + 1)));
     setCategories(newCategories);
   };
 
   // Función para agregar una persona a una categoría
   const addPersonToCategory = (categoryId, person, gasto) => {
-    setCategories(
-      categories.map((category) => {
+    setCategories((prevCategories) =>
+      prevCategories.map((category) => {
         if (category.id === Number(categoryId)) {
           const updatedCategory = new Category([], category.name, category.id);
           updatedCategory.persons = [...category.persons, { ...person, gasto: Number(gasto) }];
@@ -50,7 +50,7 @@ const CategoryProvider = ({ children }) => {
       })
     );
   };
-
+  
   //newPerson es objeto del tipo Person + atributo gasto (tipo Number)
   const updatePersonInCategory = (categoryId, newPerson) => {
     setCategories((prevCategories) =>

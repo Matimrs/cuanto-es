@@ -8,7 +8,7 @@ export const AddCategoryBox = () => {
   const [flagCategory, setFlagCategory] = useState(true);
   const [flagCategoryName, setFlagCategoryName] = useState(true);
 
-  const {isSmallScreen} = useContext(ScreenContext);
+  const {isSmallScreen ,isMediumScreen} = useContext(ScreenContext);
 
   const { addCategory } = useContext(CategoryContext);
 
@@ -53,7 +53,7 @@ export const AddCategoryBox = () => {
     "is-flex is-flex-direction-column is-justify-content-center is-align-items-center";
 
     const divFormStyle = isSmallScreen
-    ? {}
+    ? {width: "90%"}
     : { paddingRight: "22px", width: "70%" };
 
     const divAgregarStyle = isSmallScreen
@@ -70,12 +70,15 @@ export const AddCategoryBox = () => {
     >
       <div className={divFormClassNames} style={divFormStyle}>
         <div className="field" style={{width:'100%'}}>
-          <label className="label">Agregar categoria</label>
+          <label className="label" style={{
+              width: "100%",
+              textAlign: `${isSmallScreen ? "center" : "start"}`,
+            }}>Agregar categoria</label>
           <div className="control">
             <input
               id="inputName"
               className="input"
-              style={{marginBottom: `${(flagCategory && flagCategoryName) ? '32px' : '0px'}`}}
+              style={{width: "100%",marginBottom: `${(flagCategory && flagCategoryName) ? '32px' : '0px'}`}}
               type="text"
               name="category"
               placeholder="Categoria"

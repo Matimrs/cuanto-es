@@ -11,15 +11,17 @@ export const CategoryDetails = () => {
 
   const navigate = useNavigate();
 
-  const { isSmallScreen } = useContext(ScreenContext);
+  const { isSmallScreen, isMediumScreen } = useContext(ScreenContext);
 
-  const { getCategory } = useContext(CategoryContext);
+  const { getCategory} = useContext(CategoryContext);
 
   const { persons } = useContext(PersonContext);
 
   const { getResult } = useContext(ResultContext);
 
-  const [category, setCategory] = useState(null);
+  const [ category, setCategory ] = useState(null);
+
+  const [ full, setFull ] = useState(false);
 
   useEffect(() => {
     setCategory(getCategory(id));
@@ -29,11 +31,15 @@ export const CategoryDetails = () => {
     navigate(-1);
   };
 
+  const handleSelectAll = () => {
+    setFull(true);
+  }
+
   const handleAcceptClick = () => {
     if (category.name === "Categoria por defecto" && category.id === 1) {
       getResult();
       navigate(`/result`);
-    } else navigate(`/categorys`);
+    } else navigate(`/categories`);
   };
 
   if (!category) {
@@ -75,7 +81,7 @@ export const CategoryDetails = () => {
     >
       <div
         className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center my-3"
-        style={{ width: "40%", minWidth: "250px" }}
+        style={{ width: `${isSmallScreen? "90%": isMediumScreen? "60%" : "40%"}`, minWidth: "250px" }}
       >
         <h2
           className="is-size-3 has-text-weight-bold has-text-centered"
@@ -86,11 +92,14 @@ export const CategoryDetails = () => {
             : category.name.toUpperCase()}
         </h2>
         <div className="message-body" style={{ width:'100%', textAlign: "center" }}>
-          Ingrese los gastos de cada persona.<br></br> En caso de que no haya gastado, deje el campo en cero o vacio.
+          Ingrese los gastos de cada persona.<br></br> En caso de que no haya gastado, deje el campo en cero o vacio.<br></br> Si alguna persona no es parte de la division, no la seleccione.
         </div>
+        <button className="button is-light label" style={{width: "100%", color: "black", marginTop: "1rem"}} onClick={handleSelectAll}>Seleccionar todos</button>
         <div style={{ width: "100%", marginBottom: "22px" }}>
           {persons.map((person) => (
             <CategoryPersonItem
+              full={full}
+              setFull={setFull}
               isDefaultCategory={category.name === "Categoria por defecto"}
               key={person.id}
               categoryId={category.id}

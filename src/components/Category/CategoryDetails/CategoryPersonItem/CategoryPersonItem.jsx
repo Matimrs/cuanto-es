@@ -2,9 +2,15 @@ import { useContext, useState, useEffect } from "react";
 import { CategoryContext } from "../../../../context/CategoryContext";
 import { PersonContext } from "../../../../context/PersonContext";
 import { ScreenContext } from "../../../../context/ScreenContext";
-import Checkbox from '@mui/material/Checkbox';
+import Checkbox from "@mui/material/Checkbox";
 
-export const CategoryPersonItem = ({ categoryId, personId, isDefaultCategory }) => {
+export const CategoryPersonItem = ({
+  categoryId,
+  personId,
+  isDefaultCategory,
+  full,
+  setFull
+}) => {
   const {
     getCategory,
     addPersonToCategory,
@@ -19,8 +25,14 @@ export const CategoryPersonItem = ({ categoryId, personId, isDefaultCategory }) 
   const [category, setCategory] = useState(null);
   const [person, setPerson] = useState(null);
   const [inCategory, setInCategory] = useState(false);
-  const [isCheck, setIsCheck] = useState(false);
+  const [isCheck, setIsCheck] = useState(full);
   const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    if (full) {
+      setIsCheck(true);
+    }
+  }, [full]);
 
   useEffect(() => {
     const fetchedCategory = getCategory(categoryId);
@@ -38,6 +50,8 @@ export const CategoryPersonItem = ({ categoryId, personId, isDefaultCategory }) 
     if (personInCategory) {
       setIsCheck(true);
       setValue(Number(personInCategory.gasto));
+    } else if (full) {
+      setIsCheck(true);
     } else {
       setIsCheck(false);
     }
@@ -63,7 +77,7 @@ export const CategoryPersonItem = ({ categoryId, personId, isDefaultCategory }) 
 
   const handleValueChange = (e) => {
     const newValue = e.target.value;
-    if(newValue < 0) return;
+    if (newValue < 0) return;
     setValue(newValue === "" ? "" : Number(newValue));
   };
 
@@ -74,9 +88,13 @@ export const CategoryPersonItem = ({ categoryId, personId, isDefaultCategory }) 
     }
   };
 
+
+
   const handleCheckChange = () => {
+    if(isCheck) setFull(false);
     setIsCheck((prevCheck) => !prevCheck);
   };
+
 
   if (!person || !category) {
     return (
@@ -87,14 +105,14 @@ export const CategoryPersonItem = ({ categoryId, personId, isDefaultCategory }) 
   }
 
   const divContainerStyle = {
-        width: "100%",
-        margin: "10px 0",
-        padding: "15px 30px",
-        display: "flex",
-        flexDirection: isSmallScreen ? "column" : "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }
+    width: "100%",
+    margin: "10px 0",
+    padding: "15px 30px",
+    display: "flex",
+    flexDirection: isSmallScreen ? "column" : "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  };
 
   const divInputsStyle = {
     display: "flex",
@@ -102,33 +120,49 @@ export const CategoryPersonItem = ({ categoryId, personId, isDefaultCategory }) 
     justifyContent: "space-between",
     alignItems: "center",
     width: isSmallScreen ? "100%" : "200px",
-    marginTop: isSmallScreen ? "10px" : "0" ,}
+    marginTop: isSmallScreen ? "10px" : "0",
+  };
 
-    const h3Style = { color: "black", textAlign: "start", width: isSmallScreen ? '100%' : 'auto', paddingLeft: isSmallScreen ? '12px' : '0'}
-  
-    const inputValueStyle = { width: "100%"}
-    
+  const h3Style = {
+    color: "black",
+    textAlign: "start",
+    width: isSmallScreen ? "100%" : "auto",
+    paddingLeft: isSmallScreen ? "12px" : "0",
+  };
+
+  const inputValueStyle = { width: "100%" };
+
   return (
-    <div className="message" style={divContainerStyle}>
+    <div
+      className="message"
+      style={divContainerStyle}
+      onClick={handleCheckChange}
+    >
       <h3 style={h3Style}>
-      ({person.id}) <strong>{person.name}</strong> 
+        ({person.id}) <strong>{person.name}</strong>
       </h3>
       <div style={divInputsStyle}>
-      <Checkbox checked={isCheck} disabled={isDefaultCategory} onChange={handleCheckChange} color="default" />
-      
-        <input
-          type="number"
-          placeholder="Gasto"
-          value={value}
-          onChange={handleValueChange}
-          onBlur={handleBlur}
-          disabled={!isCheck}
-          style={inputValueStyle}
-        ></input>
+        <Checkbox
+          checked={isCheck}
+          disabled={isDefaultCategory}
+          color="default"
+        />
+          <input
+            type="number"
+            placeholder="Gasto"
+            value={value}
+            onChange={handleValueChange}
+            onBlur={handleBlur}
+            disabled={!isCheck}
+            style={inputValueStyle}
+            onClick={(e) => {
+              if (!e.target.disabled) {
+                // Detenemos la propagación si el input no está deshabilitado
+                e.stopPropagation();
+              }
+            }}
+          />
       </div>
     </div>
   );
 };
-
-
-

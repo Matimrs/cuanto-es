@@ -18,7 +18,7 @@ export const CategoryItem = ({ id, name, persons }) => {
   };
 
   const handleClick = () => {
-    navigate(`/categorys/${id}`);
+    navigate(`/categories/${id}`);
   };
 
   const divMessageStyle = {

@@ -1,4 +1,4 @@
-import { createContext , useContext, useState} from "react";
+import { createContext , useContext, useEffect, useState} from "react";
 import { CategoryContext } from "./CategoryContext";
 import calculate from "../utils/calculate";
 
@@ -16,7 +16,6 @@ const ResultProvider = ({ children }) => {
     const aux = calculate(categories);
     setResult(aux);
   }
-
 
   return (
     <ResultContext.Provider value={{ resultView, setResultView, result, setResult, getResult}}>

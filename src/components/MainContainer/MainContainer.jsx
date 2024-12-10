@@ -9,7 +9,7 @@ import { CategoryContext } from "../../context/CategoryContext";
 export const MainContainer = () => {
   const navigate = useNavigate();
 
-  const { isSmallScreen } = useContext(ScreenContext);
+  const { isSmallScreen, isMediumScreen } = useContext(ScreenContext);
 
   const { persons } = useContext(PersonContext);
 
@@ -24,10 +24,10 @@ export const MainContainer = () => {
           category.name === "Categoria por defecto" && category.id === 1
       )
     ) {
-      navigate("/categorys/1");
+      navigate("/categories/1");
       setContinueMessage(true);
     } else if (categories.length !== 0) {
-      navigate("/categorys");
+      navigate("/categories");
       setContinueMessage(true);
     } else setContinueMessage(true);
   };
@@ -35,20 +35,20 @@ export const MainContainer = () => {
   const HandleContinueWithOneCategory = () => {
     //crear una categoria e ir a poner cuanto gasto cada uno
     addDefaultCategory();
-    navigate("/categorys/1");
+    navigate("/categories/1");
   };
 
   const HandleContinueWithMultipleCategories = () => {
     //permitir ingresar los gastos de cada uno en cada categoria
-    navigate("/categorys");
+    navigate("/categories");
   };
 
   return (
     <div
       className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center"
-      style={{ minHeight: `calc(100% - ${isSmallScreen ? "186" : "126"}px)` }}
+      style={{ minHeight: `calc(100% - ${isSmallScreen ? "186" : "126"}px)`, width: "100%"}}
     >
-      <div style={{ width: "40%", minWidth: "250px", paddingTop: "10px" }}>
+      <div style={{ width: `${isSmallScreen ? "80%" : isMediumScreen? "60%": "40%"}`, minWidth: "250px", paddingTop: "10px" }}>
         {!continueMessage && (
           <div className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
             <h2
@@ -60,7 +60,7 @@ export const MainContainer = () => {
             <article>
               <div
                 className="message-body"
-                style={{ textAlign: "justify", marginBottom: "1rem" }}
+                style={{ textAlign: "center", color: "black", marginBottom:`${isSmallScreen? "1.5rem" : "1rem"}` }}
               >
                 Ingrese todas las personas que participaron de la actividad, las
                 que gastaron como las que no gastaron. Le recomendamos que no
@@ -84,17 +84,17 @@ export const MainContainer = () => {
           </div>
         )}
         {continueMessage && (
-          <div className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
-            <h2 className="is-size-4 has-text-weight-bold mb-2">
+          <div className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center" style={{ width: "100%"}}>
+            <h2 className="is-size-4 has-text-weight-bold mb-2" style={{textAlign: "center"}}>
               Desea dividir los gastos en categorias?
             </h2>
             <div
-              className="message is-black container my-5 p-2"
-              style={{ width: "70%", textAlign: "center" }}
+              className="message is-black is-flex is-flex-direction-column is-justify-content-center is-align-items-center my-5 p-2"
+              style={{ width: `${isSmallScreen? "100%":"90%"}`, textAlign: "center" }}
             >
               <div
                 className="message-body"
-                style={{ textAlign: "justify" }}
+                style={{ textAlign: "center" }}
               >
                 En caso de que desee separar los gastos y junto con ellos las personas involucradas, seleccione que si. En caso contrario, si desea hacer la division como un solo gasto general seleccione que no. 
               </div>

@@ -31,7 +31,7 @@ export const AddPersonBox = () => {
     "is-flex is-flex-direction-column is-justify-content-center is-align-items-center";
 
   const divFormStyle = isSmallScreen
-    ? {}
+    ? { width: "90%" }
     : { paddingRight: "22px", width: "70%" };
 
   const divAgregarStyle = isSmallScreen
@@ -45,13 +45,24 @@ export const AddPersonBox = () => {
     <div className={divContainerClassNames} style={divContainerStyle}>
       <div className={divFormClassNames} style={divFormStyle}>
         <div className="field " style={{ width: "100%" }}>
-          <label className="label">Agregar persona</label>
+          <label
+            className="label"
+            style={{
+              width: "100%",
+              textAlign: `${isSmallScreen ? "center" : "start"}`,
+            }}
+          >
+            Agregar persona
+          </label>
           <div className="control">
             <input
               ref={inputNameRef}
               id="inputName"
               className="input"
-              style={{ marginBottom: `${flagName ? "32px" : "0px"}` }}
+              style={{
+                width: "100%",
+                marginBottom: `${flagName ? "32px" : "0px"}`,
+              }}
               type="text"
               name="name"
               placeholder="Nombre"

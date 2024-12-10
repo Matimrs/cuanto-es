@@ -17,7 +17,7 @@ export const HomePage = () => {
       style={{ minHeight: `calc(100% - ${isSmallScreen ? "186" : "126"}px)` }}
     >
       <h1 className="title is-size-2 mb-6 is-dark">Cuanto es</h1>
-      <p className="is-size-5">
+      <p className="is-size-5" style={{textAlign: "center"}}>
         Bienvenido a <strong>Cuanto es</strong>, aqui podras dividir los gastos
         de un grupo de personas, saber cuanto y a quien debe pagar cada una.
       </p>
