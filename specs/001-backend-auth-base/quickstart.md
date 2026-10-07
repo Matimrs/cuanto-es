@@ -26,6 +26,10 @@ node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"
 docker compose up --build
 ```
 
+> Si el puerto 5432 del host está ocupado: `DB_HOST_PORT=5433 docker compose up --build` y
+> cambiar `localhost:5432` por `localhost:5433` en `DATABASE_URL` y `TEST_DATABASE_URL` de
+> `server/.env`.
+
 **Esperado**: `db` queda *healthy*, `api` aplica las migraciones (`prisma migrate deploy`) y
 muestra en el log que escucha en el puerto 3001. Las seis tablas existen y están vacías
 (US4, escenario 1):
@@ -111,15 +115,31 @@ npm test
 - `tests/integration/auth.login.test.js`: US2 y respuesta idéntica (SC-005).
 - `tests/integration/auth.me.test.js`: US3 (token ausente, alterado, vencido o de otro
   secreto).
-- `tests/integration/model.integrity.test.js`: una prueba por cada regla de FR-016 a FR-021
+- `tests/integration/model.integrity.test.js`: una prueba por cada regla de FR-015 a FR-021
   (SC-008).
-- `tests/unit/`: configuración (FR-025), esquemas de validación y emisión/verificación de
-  tokens.
+- `tests/integration/errors.test.js`: 404, 503 y 500 sin detalles internos (FR-013) y ninguna
+  contraseña en los logs (SC-003).
+- `tests/unit/config.test.js` y `tests/unit/env.test.js`: configuración obligatoria (FR-025) y
+  carga de `server/.env` sin pisar el entorno.
+- `tests/unit/schemas.test.js`: esquemas de registro e inicio de sesión.
+- `tests/unit/crypto.test.js`: hash de contraseñas y emisión/verificación de tokens.
 
 > Si la base `cuantoes_test` no existe (volumen creado antes de agregar el script de
 > inicialización): `docker compose exec db createdb -U cuantoes cuantoes_test`.
 
-## 5. Limpieza
+## 5. Rendimiento del inicio de sesión (SC-004)
+
+Con el entorno levantado (`BCRYPT_ROUNDS=12`):
+
+```bash
+cd server
+node scripts/login-p95.js            # 20 logins contra http://localhost:3001
+```
+
+**Esperado**: p95 < 2000 ms. Medición del 2026-10-07 (Docker Desktop en Windows, contenedor
+`api`): 20 logins, mediana 293 ms, **p95 315 ms**.
+
+## 6. Limpieza
 
 ```bash
 docker compose down -v     # borra también los datos

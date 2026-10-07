@@ -60,11 +60,11 @@ como NEEDS CLARIFICATION.
 | Principio | Evaluación | Estado |
 |---|---|---|
 | **I. Exactitud del cálculo** | `calculate.js` y `distribute()` no se tocan. Los montos se modelan en `DECIMAL(12,2)`, nunca en float; el cálculo en el servidor llega en la Fase 2. | ✅ PASS |
-| **II. Dominio reutilizable / servidor como fuente de verdad** | El servidor sigue el flujo `routes/ → controllers/ → models/` (Prisma). No se reimplementa lógica de dominio y la app React no se rehace. La SPA sigue en la raíz y no en `client/` (ver Complexity Tracking). | ✅ PASS (con desvío justificado) |
+| **II. Dominio reutilizable / servidor como fuente de verdad** | El servidor sigue el flujo `routes/ → controllers/ → models/` (Prisma). No se reimplementa lógica de dominio y la app React no se rehace. La SPA sigue en la raíz y no en `client/`, como permite la regla "Transición al monorepo" de Restricciones Técnicas (constitución v2.1.0). | ✅ PASS |
 | **III. Pruebas** | No se toca la lógica de reparto. Se agregan tests de integración de auth (recomendados) y pruebas de las reglas de integridad (SC-008). | ✅ PASS |
 | **IV. UX responsive y clara** | No hay cambios de UI. Los mensajes de error de la API están en castellano y toda entrada se valida en el servidor. | ✅ PASS |
 | **V. Stack fijo** | Express, PostgreSQL, Prisma, JWT + bcrypt y Docker Compose, como manda el stack. Deps nuevas justificadas: `zod` (validación en middleware, R6), `jsonwebtoken` (R5), `bcryptjs` (bcrypt en JS puro, R4), `supertest` (pedido explícito). Sin TypeScript, sin otro ORM. | ✅ PASS |
-| **VI. Seguridad y privacidad** | Hash bcrypt; JWT sin sesiones; middleware `requireAuth` reutilizable; validación en middleware; `server/.env` en `.gitignore` y `.env.example` versionado; `docker-compose.yml` sin credenciales (R8); ningún servicio externo. La regla "dueño accede sin ser miembro" (Clarifications) contradice el texto de VI, pero esta fase no expone endpoints de grupos. | ✅ PASS. ⚠️ Enmendar antes de la Fase 2 |
+| **VI. Seguridad y privacidad** | Hash bcrypt; JWT sin sesiones; middleware `requireAuth` reutilizable; validación en middleware; `server/.env` en `.gitignore` y `.env.example` versionado; `docker-compose.yml` sin credenciales (R8); ningún servicio externo. El acceso al grupo para el miembro con cuenta o el propietario (FR-021) coincide con el Principio VI enmendado en la v2.1.0; los endpoints que lo aplican llegan en la Fase 2. | ✅ PASS |
 | **VII. Persistencia e historial** | Gastos individuales, `Group` en lugar de la sesión implícita, invitados con `userId` nulo, `Settlement.paid`, migraciones de Prisma versionadas. | ✅ PASS |
 | **Entregables académicos** | Las fichas de casos de uso "Registrarse", "Iniciar sesión" y "Consultar identidad" salen de las US1–US3 (Plantilla 02, 13/10); `data-model.md` es la base del diagrama de clases UML; los casos del plan de pruebas formal salen de los escenarios de aceptación. Se versionan en `docs/entregables/` (tareas de la fase "Entregables académicos" de tasks.md). | ✅ PASS |
 | **Flujo** | Rama corta `feature/001-backend-auth-base`. Antes del merge, `npm test` en `server/` y `npm run build` del cliente (no se modifica). Commits en español y en modo imperativo. | ✅ PASS |
@@ -132,7 +132,10 @@ cuanto-es/
     │       ├── tokens.js       # signToken / verifyToken (HS256, 7d)
     │       ├── passwords.js    # hashPassword / verifyPassword (bcryptjs)
     │       ├── httpError.js    # clase HttpError(status, code, message, fields)
-    │       └── env.js          # loadLocalEnv(): lee server/.env sin pisar variables ya definidas (R7)
+    │       ├── env.js          # loadLocalEnv(): lee server/.env sin pisar variables ya definidas (R7)
+    │       └── users.js        # toPublicUser(): vista pública { id, name, email }
+    ├── scripts/
+    │   └── login-p95.js        # medición de SC-004 contra la API levantada
     └── tests/
         ├── setup/              # globalSetup (migrate deploy) + helper de truncado
         ├── integration/        # auth.register, auth.login, auth.me, model.integrity
@@ -173,7 +176,10 @@ errores → errorHandler              (HttpError | Prisma P2002→409 | P1001→
 
 ## Complexity Tracking
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| La SPA React queda en la raíz en lugar de `client/` (Restricciones Técnicas: estructura objetivo) | El usuario excluyó los cambios en el frontend de esta feature. Mover la app toca rutas, scripts y la configuración de Netlify. | Moverla ahora mezcla en una sola rama una refactorización del cliente con el backend nuevo y agranda el riesgo de cara a la Plantilla 02 (13/10). Se hace en una feature aparte, antes o durante la Fase 3. |
-| Acceso al grupo para el dueño aunque no sea miembro (Clarifications) contra el Principio VI ("verificar que es miembro") | Decisión del usuario en `/speckit-clarify`. | No aplica en esta fase (no hay endpoints de grupo). **Acción**: enmendar el Principio VI con `/speckit-constitution` antes de planificar la Fase 2. |
+Sin violaciones de la constitución (v2.1.0). Los dos desvíos registrados antes se resolvieron
+con la enmienda 2.0.0 → 2.1.0:
+
+- **SPA en la raíz en lugar de `client/`**: ahora la ampara la regla "Transición al monorepo"
+  (Restricciones Técnicas). La mudanza se hace en una feature propia antes de terminar la Fase 3.
+- **Dueño con acceso al grupo sin ser miembro**: el Principio VI ya admite al miembro con cuenta
+  o al propietario.

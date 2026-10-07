@@ -25,6 +25,67 @@ También puedes acceder a la aplicación en línea: [Distribution App](https://d
 
 ¡Disfruta de Distribution!
 
+## Backend (server/)
+
+API de CuantoEs (Node + Express + Prisma + PostgreSQL). Por ahora expone
+`POST /auth/register`, `POST /auth/login` y `GET /auth/me`.
+
+### Requisitos
+
+- Docker Desktop (con Docker Compose v2).
+- Node.js 22 o superior y npm, solo para correr los tests o el servidor fuera de Docker.
+
+### Levantar el backend
+
+1. Crear la configuración local a partir del ejemplo (`server/.env` nunca se commitea):
+
+   ```bash
+   cp server/.env.example server/.env
+   ```
+
+2. Completar `JWT_SECRET` en `server/.env` con al menos 32 caracteres aleatorios. Para generarlos:
+
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"
+   ```
+
+3. Levantar la base de datos y la API en un solo paso (aplica las migraciones al arrancar):
+
+   ```bash
+   docker compose up --build
+   ```
+
+   La API queda en <http://localhost:3001>. Para probarla:
+
+   ```bash
+   curl -X POST http://localhost:3001/auth/register -H "Content-Type: application/json" \
+     -d '{"name":"Ana","email":"ana@ejemplo.com","password":"secreta123"}'
+   ```
+
+> **Puerto 5432 ocupado** (por ejemplo, por otro Postgres): levantar con
+> `DB_HOST_PORT=5433 docker compose up --build` y cambiar `localhost:5432` por `localhost:5433`
+> en `DATABASE_URL` y `TEST_DATABASE_URL` de `server/.env`.
+
+### Tests
+
+Con el contenedor `db` levantado (`docker compose up -d db`):
+
+```bash
+cd server
+npm install
+npm test
+```
+
+Los tests usan una base aparte, `cuantoes_test`, que se crea sola la primera vez que se
+inicializa el volumen. Si el volumen es anterior y la base no existe:
+
+```bash
+docker compose exec db createdb -U cuantoes cuantoes_test
+```
+
+Guía completa y escenarios de prueba manual:
+[specs/001-backend-auth-base/quickstart.md](specs/001-backend-auth-base/quickstart.md).
+
 
 ## ENGLISH    
 

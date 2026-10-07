@@ -113,6 +113,10 @@ detalles.
   versionar credenciales.
 - **Desvío de `docs/CLAUDE.md` §8**: el compose de referencia tiene `POSTGRES_PASSWORD`
   hardcodeado; se reemplaza por `env_file` para cumplir el Principio VI.
+- **Agregado en la implementación**: el puerto del host para `db` es `${DB_HOST_PORT:-5432}`.
+  Si el 5432 ya está ocupado (por ejemplo, por el Postgres de otro proyecto), se levanta con
+  `DB_HOST_PORT=5433 docker compose up` y se ajusta el puerto en `DATABASE_URL` y
+  `TEST_DATABASE_URL` de `server/.env`. No afecta a `api`, que usa la red interna (`db:5432`).
 - **Alternatives considered**: dos archivos `.env` (`.env` y `.env.docker`), que agregan
   confusión; `environment: DATABASE_URL` en el compose (versiona la contraseña); o correr las
   migraciones a mano (no cumple FR-023).

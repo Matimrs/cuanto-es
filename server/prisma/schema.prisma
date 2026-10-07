@@ -1,0 +1,102 @@
+// Modelo de datos de CuantoEs (specs/001-backend-auth-base/data-model.md).
+// Las reglas que Prisma no expresa (CHECK) están en la migración inicial (research R10).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(uuid()) @db.Uuid
+  name         String        @db.VarChar(100)
+  email        String        @unique @db.VarChar(254)
+  passwordHash String        @map("password_hash") @db.VarChar(60)
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamptz
+  ownedGroups  Group[]
+  memberships  GroupMember[]
+
+  @@map("users")
+}
+
+model Group {
+  id          String        @id @default(uuid()) @db.Uuid
+  name        String        @db.VarChar(100)
+  ownerId     String        @map("owner_id") @db.Uuid
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  owner       User          @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  members     GroupMember[]
+  categories  Category[]
+  expenses    Expense[]
+  settlements Settlement[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  id                    String       @id @default(uuid()) @db.Uuid
+  groupId               String       @map("group_id") @db.Uuid
+  userId                String?      @map("user_id") @db.Uuid
+  alias                 String?      @db.VarChar(100)
+  createdAt             DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  group                 Group        @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  user                  User?        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  expensesPaid          Expense[]
+  settlementsAsCreditor Settlement[] @relation("SettlementCreditor")
+  settlementsAsDebtor   Settlement[] @relation("SettlementDebtor")
+
+  @@unique([groupId, userId])
+  @@unique([id, groupId])
+  @@map("group_members")
+}
+
+model Category {
+  id        String    @id @default(uuid()) @db.Uuid
+  groupId   String    @map("group_id") @db.Uuid
+  name      String    @db.VarChar(100)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  group     Group     @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  expenses  Expense[]
+
+  @@unique([groupId, name])
+  @@unique([id, groupId])
+  @@map("categories")
+}
+
+model Expense {
+  id          String      @id @default(uuid()) @db.Uuid
+  groupId     String      @map("group_id") @db.Uuid
+  categoryId  String      @map("category_id") @db.Uuid
+  paidById    String      @map("paid_by_id") @db.Uuid
+  amount      Decimal     @db.Decimal(12, 2)
+  description String?     @db.VarChar(200)
+  date        DateTime    @db.Date
+  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz
+  group       Group       @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  // FK compuestas: la categoría y quien pagó deben ser del mismo grupo (FR-019).
+  category    Category    @relation(fields: [categoryId, groupId], references: [id, groupId], onDelete: Restrict)
+  paidBy      GroupMember @relation(fields: [paidById, groupId], references: [id, groupId], onDelete: Restrict)
+
+  @@index([categoryId])
+  @@map("expenses")
+}
+
+model Settlement {
+  id         String      @id @default(uuid()) @db.Uuid
+  groupId    String      @map("group_id") @db.Uuid
+  creditorId String      @map("creditor_id") @db.Uuid
+  debtorId   String      @map("debtor_id") @db.Uuid
+  amount     Decimal     @db.Decimal(12, 2)
+  paid       Boolean     @default(false)
+  createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamptz
+  group      Group       @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  // FK compuestas: acreedor y deudor deben ser miembros del mismo grupo (FR-018).
+  creditor   GroupMember @relation("SettlementCreditor", fields: [creditorId, groupId], references: [id, groupId], onDelete: Restrict)
+  debtor     GroupMember @relation("SettlementDebtor", fields: [debtorId, groupId], references: [id, groupId], onDelete: Restrict)
+
+  @@map("settlements")
+}

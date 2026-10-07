@@ -1,0 +1,31 @@
+# Backend de CuantoEs: base de datos (db) + API (api).
+# Las credenciales viven en server/.env (Principio VI); este archivo no contiene ninguna.
+# Uso: cp server/.env.example server/.env && docker compose up --build
+services:
+  db:
+    image: postgres:16
+    env_file: ./server/.env
+    ports:
+      # Si el 5432 del host está ocupado: DB_HOST_PORT=5433 docker compose up
+      # (y ajustar el puerto de DATABASE_URL / TEST_DATABASE_URL en server/.env).
+      - "${DB_HOST_PORT:-5432}:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./server/docker/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./server
+    env_file: ./server/.env
+    ports:
+      - "3001:3001"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:

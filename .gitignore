@@ -23,5 +23,7 @@ yarn-debug.log*
 yarn-error.log*
 
 
-#server
-/server/*.env
+# server
+/server/.env
+/server/node_modules/
+/server/coverage/
