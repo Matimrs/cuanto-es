@@ -7,13 +7,47 @@ function send(res, status, code, message, fields) {
   res.status(status).json({ error });
 }
 
-function isUniqueEmailViolation(err) {
+// Violaciones de unicidad (P2002) → 409 con su código. Prisma informa el modelo y las columnas
+// (o expresiones) del índice: p. ej. { modelName: 'Category', target: ['group_id', 'lower(name::text)'] }.
+const UNIQUE_VIOLATIONS = [
+  { model: 'User', column: 'email', code: 'EMAIL_TAKEN', message: 'Ese email ya está registrado' },
+  {
+    model: 'Category',
+    column: 'name',
+    code: 'CATEGORY_NAME_TAKEN',
+    message: 'Ya hay una categoría con ese nombre en el grupo',
+  },
+  {
+    model: 'GroupMember',
+    column: 'alias',
+    code: 'ALIAS_TAKEN',
+    message: 'Ya hay un invitado con ese alias en el grupo',
+  },
+  {
+    model: 'GroupMember',
+    column: 'user_id',
+    code: 'ALREADY_MEMBER',
+    message: 'Esa persona ya es miembro del grupo',
+  },
+  {
+    model: 'CategoryParticipant',
+    column: 'member_id',
+    code: 'ALREADY_PARTICIPANT',
+    message: 'Ese miembro ya participa de la categoría',
+  },
+];
+
+function uniqueViolation(err) {
   if (!(err instanceof Prisma.PrismaClientKnownRequestError) || err.code !== 'P2002') {
-    return false;
+    return null;
   }
   const target = err.meta && err.meta.target;
-  const fields = Array.isArray(target) ? target : [String(target)];
-  return fields.some((f) => f.includes('email'));
+  const columns = (Array.isArray(target) ? target : [String(target)]).join(' ');
+  return (
+    UNIQUE_VIOLATIONS.find(
+      (v) => (!err.meta.modelName || err.meta.modelName === v.model) && columns.includes(v.column),
+    ) ?? null
+  );
 }
 
 function isDatabaseUnavailable(err) {
@@ -33,8 +67,9 @@ function errorHandler(err, req, res, next) {
   if (err.type === 'entity.parse.failed') {
     return send(res, 400, 'VALIDATION_ERROR', 'Hay datos inválidos');
   }
-  if (isUniqueEmailViolation(err)) {
-    return send(res, 409, 'EMAIL_TAKEN', 'Ese email ya está registrado');
+  const violation = uniqueViolation(err);
+  if (violation) {
+    return send(res, 409, violation.code, violation.message);
   }
 
   console.error(`[${req.method} ${req.originalUrl}]`, err.stack || err);

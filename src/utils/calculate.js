@@ -1,4 +1,4 @@
-import Peer from "../classes/Peer";
+import Peer from "../classes/Peer.js";
 
 //persons y categorys son arreglos
 

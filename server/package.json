@@ -6,12 +6,12 @@
   "main": "src/index.js",
   "type": "commonjs",
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
-    "test": "jest --runInBand",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand",
     "prisma:migrate": "prisma migrate dev"
   },
   "dependencies": {
@@ -20,11 +20,15 @@
     "express": "5.2.1",
     "jsonwebtoken": "9.0.3",
     "prisma": "6.19.3",
+    "uuid": "10.0.0",
     "zod": "4.6.5"
   },
   "devDependencies": {
     "jest": "30.5.2",
     "supertest": "7.3.1"
+  },
+  "overrides": {
+    "deepmerge-ts": "8.0.2"
   },
   "allowScripts": {
     "prisma@6.19.3": true,

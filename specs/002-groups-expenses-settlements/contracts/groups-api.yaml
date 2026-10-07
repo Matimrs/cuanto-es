@@ -1,0 +1,585 @@
+openapi: 3.0.3
+info:
+  title: CuantoEs API — Grupos, gastos y liquidaciones (Fase 2)
+  version: 0.2.0
+  description: >
+    Todas las rutas exigen `Authorization: Bearer <token>` (Fase 1) y responden 401
+    UNAUTHENTICATED sin token válido. Si el usuario no es dueño ni miembro con cuenta del grupo,
+    el grupo y todos sus recursos responden 404 NOT_FOUND (no se revela si existen).
+    Los montos viajan como string decimal con 2 decimales ("15000.50", ARS). En la entrada
+    también se acepta un número JSON; más de 2 decimales → 400. Las fechas de gasto son
+    YYYY-MM-DD. Los errores usan el formato de la Fase 1 (`contracts/auth-api.yaml` de la 001)
+    y los campos desconocidos del cuerpo se ignoran.
+servers:
+  - url: http://localhost:3001
+
+security:
+  - bearerAuth: []
+
+paths:
+  /groups:
+    get:
+      summary: Listar mis grupos (dueño o miembro con cuenta)
+      responses:
+        '200':
+          description: Grupos ordenados por fecha de creación (más reciente primero)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  groups: { type: array, items: { $ref: '#/components/schemas/GroupSummary' } }
+    post:
+      summary: Crear un grupo (el usuario queda como dueño)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/GroupInput' }
+      responses:
+        '201':
+          description: Grupo creado
+          content:
+            application/json:
+              schema: { type: object, properties: { group: { $ref: '#/components/schemas/GroupDetail' } } }
+        '400': { $ref: '#/components/responses/ValidationError' }
+
+  /groups/{groupId}:
+    parameters: [{ $ref: '#/components/parameters/groupId' }]
+    get:
+      summary: Detalle del grupo (miembros y categorías con su total)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: object, properties: { group: { $ref: '#/components/schemas/GroupDetail' } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      summary: Renombrar el grupo (solo el dueño)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/GroupInput' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: object, properties: { group: { $ref: '#/components/schemas/GroupDetail' } } }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      summary: Eliminar el grupo y todo su contenido (solo el dueño)
+      responses:
+        '204': { description: Eliminado }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /groups/{groupId}/members:
+    parameters: [{ $ref: '#/components/parameters/groupId' }]
+    get:
+      summary: Listar los miembros
+      responses:
+        '200':
+          description: Miembros en orden de alta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  members: { type: array, items: { $ref: '#/components/schemas/Member' } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      summary: Agregar un miembro por email (usuario registrado) o por alias (invitado) — solo el dueño
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required: [email]
+                  properties: { email: { type: string, format: email } }
+                - type: object
+                  required: [alias]
+                  properties: { alias: { type: string, minLength: 1, maxLength: 100 } }
+            examples:
+              registrado: { value: { email: beto@ejemplo.com } }
+              invitado: { value: { alias: Dani } }
+      responses:
+        '201':
+          description: Miembro agregado
+          content:
+            application/json:
+              schema: { type: object, properties: { member: { $ref: '#/components/schemas/Member' } } }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: ALREADY_MEMBER o ALIAS_TAKEN
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example: { error: { code: ALREADY_MEMBER, message: Esa persona ya es miembro del grupo } }
+        '422':
+          description: El email no corresponde a ninguna cuenta
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example:
+                error: { code: USER_NOT_FOUND, message: No hay ninguna cuenta con ese email. Podés agregarlo como invitado. }
+
+  /groups/{groupId}/members/{memberId}:
+    parameters:
+      - { $ref: '#/components/parameters/groupId' }
+      - { name: memberId, in: path, required: true, schema: { type: string, format: uuid } }
+    patch:
+      summary: Cambiar el alias de un invitado (solo el dueño)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [alias], properties: { alias: { type: string } } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: object, properties: { member: { $ref: '#/components/schemas/Member' } } }
+        '400': { description: 'VALIDATION_ERROR (incluye intentar poner alias a un miembro con cuenta)' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: ALIAS_TAKEN }
+    delete:
+      summary: Quitar un miembro sin gastos ni pagos (solo el dueño); deja de participar de sus categorías
+      responses:
+        '204': { description: Quitado; las liquidaciones pendientes se recalculan }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: MEMBER_HAS_EXPENSES o MEMBER_HAS_PAYMENTS
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example:
+                error: { code: MEMBER_HAS_EXPENSES, message: Este miembro pagó gastos del grupo. Primero eliminá o reasigná sus gastos. }
+
+  /groups/{groupId}/categories:
+    parameters: [{ $ref: '#/components/parameters/groupId' }]
+    get:
+      summary: Listar las categorías con sus participantes y su total
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories: { type: array, items: { $ref: '#/components/schemas/Category' } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      summary: Crear una categoría (cualquier participante del grupo)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, minLength: 1, maxLength: 100 }
+                participantIds:
+                  type: array
+                  minItems: 1
+                  items: { type: string, format: uuid }
+                  description: Ids de miembros del grupo. Si se omite, participan todos los miembros actuales.
+      responses:
+        '201':
+          description: Creada
+          content:
+            application/json:
+              schema: { type: object, properties: { category: { $ref: '#/components/schemas/Category' } } }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: CATEGORY_NAME_TAKEN }
+
+  /groups/{groupId}/categories/{categoryId}:
+    parameters:
+      - { $ref: '#/components/parameters/groupId' }
+      - { $ref: '#/components/parameters/categoryId' }
+    get:
+      summary: Detalle de una categoría
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: object, properties: { category: { $ref: '#/components/schemas/Category' } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      summary: Renombrar (dueño del grupo o quien la creó)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [name], properties: { name: { type: string } } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: object, properties: { category: { $ref: '#/components/schemas/Category' } } }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: CATEGORY_NAME_TAKEN }
+    delete:
+      summary: Eliminar la categoría, sus participantes y sus gastos (dueño del grupo o quien la creó)
+      responses:
+        '204': { description: Eliminada; las liquidaciones pendientes se recalculan }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /groups/{groupId}/categories/{categoryId}/participants:
+    parameters:
+      - { $ref: '#/components/parameters/groupId' }
+      - { $ref: '#/components/parameters/categoryId' }
+    post:
+      summary: Sumar un miembro como participante (dueño del grupo o quien creó la categoría)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [memberId], properties: { memberId: { type: string, format: uuid } } }
+      responses:
+        '201':
+          description: Agregado; las pendientes se recalculan
+          content:
+            application/json:
+              schema: { type: object, properties: { category: { $ref: '#/components/schemas/Category' } } }
+        '400': { description: 'VALIDATION_ERROR (el miembro no es del grupo)' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: 'ALREADY_PARTICIPANT' }
+
+  /groups/{groupId}/categories/{categoryId}/participants/{memberId}:
+    parameters:
+      - { $ref: '#/components/parameters/groupId' }
+      - { $ref: '#/components/parameters/categoryId' }
+      - { name: memberId, in: path, required: true, schema: { type: string, format: uuid } }
+    delete:
+      summary: Quitar un participante sin gastos en la categoría (dueño del grupo o quien la creó)
+      responses:
+        '204': { description: Quitado; las pendientes se recalculan }
+        '400': { description: 'VALIDATION_ERROR (es el último participante)' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: PARTICIPANT_HAS_EXPENSES }
+
+  /groups/{groupId}/categories/{categoryId}/expenses:
+    parameters:
+      - { $ref: '#/components/parameters/groupId' }
+      - { $ref: '#/components/parameters/categoryId' }
+    get:
+      summary: Listar los gastos de la categoría (fecha descendente)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  expenses: { type: array, items: { $ref: '#/components/schemas/Expense' } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      summary: Registrar un gasto (cualquier participante del grupo)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ExpenseInput' }
+            example: { paidById: 3f0c…, amount: '15000.50', date: '2026-10-05', description: YPF ruta 9 }
+      responses:
+        '201':
+          description: Registrado; las pendientes se recalculan
+          content:
+            application/json:
+              schema: { type: object, properties: { expense: { $ref: '#/components/schemas/Expense' } } }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /groups/{groupId}/expenses/{expenseId}:
+    parameters:
+      - { $ref: '#/components/parameters/groupId' }
+      - { name: expenseId, in: path, required: true, schema: { type: string, format: uuid } }
+    get:
+      summary: Detalle de un gasto
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: object, properties: { expense: { $ref: '#/components/schemas/Expense' } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      summary: Modificar un gasto (dueño del grupo o quien lo cargó); puede cambiar de categoría
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ExpenseInput'
+              description: Todos los campos son opcionales; se valida el resultado final.
+              properties:
+                categoryId: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Modificado; las pendientes se recalculan
+          content:
+            application/json:
+              schema: { type: object, properties: { expense: { $ref: '#/components/schemas/Expense' } } }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      summary: Eliminar un gasto (dueño del grupo o quien lo cargó)
+      responses:
+        '204': { description: Eliminado; las pendientes se recalculan }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /groups/{groupId}/settlements:
+    parameters: [{ $ref: '#/components/parameters/groupId' }]
+    get:
+      summary: Liquidaciones pendientes y pagadas, y saldo de cada miembro (no modifica nada)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SettlementsView' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /groups/{groupId}/settlements/{settlementId}:
+    parameters:
+      - { $ref: '#/components/parameters/groupId' }
+      - { name: settlementId, in: path, required: true, schema: { type: string, format: uuid } }
+    patch:
+      summary: Registrar un pago (total o parcial) o volver un pago a pendiente
+      description: >
+        Solo el deudor o el acreedor (si tienen cuenta) o el dueño del grupo. `paid: true` sobre una
+        pendiente registra un pago por `amount` (por defecto, el total). `paid: false` sobre una
+        pagada la anula. En ambos casos se recalculan las pendientes.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [paid]
+              properties:
+                paid: { type: boolean }
+                amount: { $ref: '#/components/schemas/Money' }
+            examples:
+              total: { value: { paid: true } }
+              parcial: { value: { paid: true, amount: '60.00' } }
+              anular: { value: { paid: false } }
+      responses:
+        '200':
+          description: Estado actualizado de las liquidaciones del grupo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SettlementsView' }
+        '400': { description: 'VALIDATION_ERROR (monto 0, mayor que la liquidación o con más de 2 decimales)' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: SETTLEMENT_CHANGED (fue reemplazada por un recálculo) o SETTLEMENT_ALREADY_PAID
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example:
+                error: { code: SETTLEMENT_CHANGED, message: Las liquidaciones cambiaron. Volvé a consultarlas. }
+
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+
+  parameters:
+    groupId: { name: groupId, in: path, required: true, schema: { type: string, format: uuid } }
+    categoryId: { name: categoryId, in: path, required: true, schema: { type: string, format: uuid } }
+
+  schemas:
+    Money:
+      type: string
+      pattern: '^\d{1,10}\.\d{2}$'
+      example: '15000.50'
+      description: ARS con 2 decimales. En la entrada también se acepta un número con hasta 2 decimales.
+
+    UserRef:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+
+    GroupInput:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 100 }
+
+    GroupSummary:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        owner: { $ref: '#/components/schemas/UserRef' }
+        role: { type: string, enum: [owner, member], description: Rol del usuario que consulta }
+        memberCount: { type: integer }
+        createdAt: { type: string, format: date-time }
+
+    GroupDetail:
+      allOf:
+        - $ref: '#/components/schemas/GroupSummary'
+        - type: object
+          properties:
+            members: { type: array, items: { $ref: '#/components/schemas/Member' } }
+            categories: { type: array, items: { $ref: '#/components/schemas/Category' } }
+
+    Member:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        displayName: { type: string, description: Nombre de la cuenta o alias del invitado }
+        userId: { type: string, format: uuid, nullable: true }
+        isGuest: { type: boolean }
+        createdAt: { type: string, format: date-time }
+
+    Category:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        createdBy: { $ref: '#/components/schemas/UserRef' }
+        participants:
+          type: array
+          description: En orden de alta en la categoría
+          items:
+            type: object
+            properties:
+              memberId: { type: string, format: uuid }
+              displayName: { type: string }
+              paid: { $ref: '#/components/schemas/Money' }
+        total: { $ref: '#/components/schemas/Money' }
+        createdAt: { type: string, format: date-time }
+
+    ExpenseInput:
+      type: object
+      required: [paidById, amount, date]
+      properties:
+        paidById: { type: string, format: uuid, description: Miembro que pagó; debe participar de la categoría }
+        amount: { $ref: '#/components/schemas/Money' }
+        date: { type: string, format: date }
+        description: { type: string, maxLength: 200, nullable: true }
+
+    Expense:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        categoryId: { type: string, format: uuid }
+        paidBy: { type: object, properties: { id: { type: string, format: uuid }, displayName: { type: string } } }
+        amount: { $ref: '#/components/schemas/Money' }
+        date: { type: string, format: date }
+        description: { type: string, nullable: true }
+        createdBy: { $ref: '#/components/schemas/UserRef' }
+        createdAt: { type: string, format: date-time }
+
+    Settlement:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        debtor: { type: object, properties: { id: { type: string, format: uuid }, displayName: { type: string } } }
+        creditor: { type: object, properties: { id: { type: string, format: uuid }, displayName: { type: string } } }
+        amount: { $ref: '#/components/schemas/Money' }
+        paid: { type: boolean }
+        paidAt: { type: string, format: date-time, nullable: true }
+        paidBy: { allOf: [{ $ref: '#/components/schemas/UserRef' }], nullable: true }
+
+    Balance:
+      type: object
+      description: Saldo de un miembro (FR-027b). net = contributed − share + sent − received; pendiente por cobrar si es > 0.
+      properties:
+        memberId: { type: string, format: uuid }
+        displayName: { type: string }
+        contributed: { $ref: '#/components/schemas/Money' }
+        share: { $ref: '#/components/schemas/Money' }
+        paymentsSent: { $ref: '#/components/schemas/Money' }
+        paymentsReceived: { $ref: '#/components/schemas/Money' }
+        pendingNet: { type: string, example: '-40.00', description: 'Positivo: le deben; negativo: debe' }
+
+    SettlementsView:
+      type: object
+      properties:
+        pending: { type: array, items: { $ref: '#/components/schemas/Settlement' } }
+        paid: { type: array, items: { $ref: '#/components/schemas/Settlement' } }
+        balances: { type: array, items: { $ref: '#/components/schemas/Balance' } }
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum:
+                - VALIDATION_ERROR
+                - UNAUTHENTICATED
+                - FORBIDDEN
+                - NOT_FOUND
+                - ALREADY_MEMBER
+                - ALIAS_TAKEN
+                - USER_NOT_FOUND
+                - CATEGORY_NAME_TAKEN
+                - ALREADY_PARTICIPANT
+                - PARTICIPANT_HAS_EXPENSES
+                - MEMBER_HAS_EXPENSES
+                - MEMBER_HAS_PAYMENTS
+                - SETTLEMENT_CHANGED
+                - SETTLEMENT_ALREADY_PAID
+                - SERVICE_UNAVAILABLE
+                - INTERNAL_ERROR
+            message: { type: string }
+            fields: { type: object, additionalProperties: { type: string } }
+
+  responses:
+    ValidationError:
+      description: Datos inválidos
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example:
+            error:
+              code: VALIDATION_ERROR
+              message: Hay datos inválidos
+              fields: { amount: El monto debe ser mayor que cero y tener como máximo 2 decimales }
+    Forbidden:
+      description: Tiene acceso al grupo pero no permiso para esta operación
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example: { error: { code: FORBIDDEN, message: No tenés permiso para hacer esto } }
+    NotFound:
+      description: El recurso no existe o el usuario no tiene acceso al grupo
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example: { error: { code: NOT_FOUND, message: Recurso no encontrado } }

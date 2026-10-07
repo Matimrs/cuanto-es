@@ -1,6 +1,6 @@
 # Feature Specification: Grupos, gastos y liquidaciones en el servidor (Fase 2)
 
-**Feature Branch**: `feature/002-groups-expenses-settlements` (a crear desde `main` cuando se integre la Fase 1)
+**Feature Branch**: `feature/002-groups-expenses-settlements` (sobre la Fase 1)
 
 **Created**: 2026-10-07
 
@@ -23,6 +23,16 @@ marcar como pagadas.
 - Q: ¿Quién puede crear, modificar y eliminar categorías y gastos? → A: Cualquier participante
   del grupo (dueño o miembro con cuenta) puede crearlos; solo el dueño del grupo o quien los creó
   puede modificarlos o eliminarlos.
+- Q: ¿Quién puede marcar una liquidación como pagada, o volverla a pendiente? → A: Solo el deudor
+  o el acreedor de esa liquidación (si tienen cuenta) o el dueño del grupo.
+- Q: ¿Cuándo se recalculan las liquidaciones pendientes? → A: Solo cuando cambian gastos,
+  participantes, miembros o pagos; consultarlas no modifica nada, y marcar una pendiente que ya
+  fue reemplazada se rechaza pidiendo volver a consultarlas.
+- Q: ¿Se puede registrar un pago parcial de una liquidación? → A: Sí: se indica el monto pagado
+  (menor o igual al total); se guarda un pago por ese monto y el resto se recalcula como
+  pendiente.
+- Q: ¿Quién se hace cargo del centavo sobrante cuando un monto no se divide en centavos exactos?
+  → A: Quien más pagó en la categoría lo absorbe (recibe un centavo menos).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -157,26 +167,32 @@ con los mismos montos (redondeados a centavos).
 3. **Given** un resultado con cadena (Ana le debe a Beto y Beto le debe a Carla), **When** se
    consultan las liquidaciones, **Then** el sistema la simplifica (Ana le paga directamente a
    Carla) sin cambiar cuánto debe o recibe cada uno en total.
-4. **Given** una categoría con 100 repartidos entre 3 participantes, **When** se consultan las
-   liquidaciones, **Then** todos los montos están redondeados a centavos y la suma de lo que se
-   paga es igual a la suma de lo que se recibe, sin deudas residuales de menos de un centavo.
+4. **Given** una categoría con participantes Ana (pagó 100), Beto (0) y Dani (0), **When** se
+   consultan las liquidaciones, **Then** Beto le paga 33,33 a Ana y Dani le paga 33,33 a Ana: Ana,
+   que fue quien más pagó, absorbe el centavo sobrante (su parte es 33,34 y recibe 66,66). La suma
+   de lo que se paga es igual a la suma de lo que se recibe, sin deudas residuales.
 5. **Given** un grupo cuyas cuentas ya están equilibradas (o sin gastos), **When** se consultan
    las liquidaciones, **Then** la lista está vacía.
 6. **Given** liquidaciones pendientes ya calculadas, **When** se agrega, modifica o elimina un
-   gasto, **Then** la próxima consulta recalcula las pendientes y refleja el cambio.
+   gasto, **Then** las pendientes se recalculan y la próxima consulta refleja el cambio. Si no
+   cambió nada, dos consultas seguidas devuelven exactamente las mismas liquidaciones (con los
+   mismos identificadores).
 7. **Given** que Beto ya pagó la liquidación "Beto le paga 100 a Ana" (marcada como pagada),
    **When** se agrega un gasto que hace que Beto deba 150 en total, **Then** la liquidación pagada
    se conserva tal cual y aparece una nueva pendiente por los 50 que faltan.
 8. **Given** que Beto pagó 100 a Ana, **When** se elimina un gasto y ahora Beto solo debía 60,
-   **Then** la liquidación pagada se conserva y aparece una pendiente en sentido inverso: Ana le
-   devuelve 40 a Beto.
+   **Then** la liquidación pagada se conserva y Beto tiene 40 a cobrar: si Ana y Beto son los
+   únicos con saldo, aparece "Ana le devuelve 40 a Beto"; si hay otros deudores de Ana, la
+   simplificación de cadenas puede hacer que esos 40 se los pague otro deudor directamente a
+   Beto. En ambos casos ningún saldo neto cambia.
 
 ---
 
 ### User Story 5 - Marcar una liquidación como pagada (Priority: P2)
 
-Cuando alguien transfiere lo que debe, se marca esa liquidación como pagada; si se marcó por
-error, se puede volver a pendiente. Así el grupo sabe qué deudas siguen abiertas.
+Cuando alguien transfiere lo que debe, total o parcialmente, se registra ese pago sobre la
+liquidación; si se registró por error, se puede volver a pendiente. Así el grupo sabe qué deudas
+siguen abiertas y por cuánto.
 
 **Why this priority**: agrega el estado de pago que la app original no tenía y prepara la
 integración con Mercado Pago (Fase 5), pero el reparto ya es útil sin él.
@@ -186,13 +202,30 @@ consulta la muestra pagada; se la vuelve a pendiente y se muestra pendiente.
 
 **Acceptance Scenarios**:
 
-1. **Given** la liquidación pendiente "Beto le paga 100 a Ana", **When** un participante del grupo
-   la marca como pagada, **Then** queda pagada y se registra cuándo se marcó.
+1. **Given** la liquidación pendiente "Beto le paga 100 a Ana", **When** Beto (deudor), Ana
+   (acreedora) o el dueño del grupo la marca como pagada, **Then** queda pagada y se registra
+   cuándo se marcó y quién la marcó.
 2. **Given** una liquidación pagada, **When** se la vuelve a marcar como pendiente, **Then** deja
-   de contar como pago realizado y la próxima consulta la incluye en el recálculo de las
-   pendientes.
+   de contar como pago realizado y las pendientes se recalculan en ese momento.
 3. **Given** una liquidación de un grupo al que Carla no pertenece, **When** Carla intenta
    marcarla, **Then** el sistema rechaza la solicitud sin revelar si la liquidación existe.
+4. **Given** la liquidación "Beto le paga 100 a Ana" y Carla, miembro con cuenta del grupo que no
+   es deudora, acreedora ni dueña, **When** Carla intenta marcarla como pagada o volverla a
+   pendiente, **Then** el sistema lo rechaza por falta de permisos (Carla sí puede verla).
+5. **Given** la liquidación "Dani le paga 50 a Ana", donde Dani es un invitado sin cuenta, **When**
+   Ana o el dueño la marcan como pagada, **Then** queda pagada.
+6. **Given** que Beto consultó la pendiente "Beto le paga 100 a Ana" y después alguien agregó un
+   gasto que la reemplazó, **When** Beto intenta marcar la liquidación que había consultado,
+   **Then** el sistema lo rechaza indicando que las liquidaciones cambiaron y hay que volver a
+   consultarlas.
+7. **Given** la pendiente "Beto le paga 100 a Ana", **When** Beto registra un pago de 60,
+   **Then** queda un pago realizado de 60 de Beto a Ana y una nueva pendiente "Beto le paga 40 a
+   Ana".
+8. **Given** la pendiente "Beto le paga 100 a Ana", **When** se intenta registrar un pago de 120,
+   de 0 o con más de dos decimales, **Then** el sistema lo rechaza indicando el monto válido.
+9. **Given** el pago parcial de 60 del escenario 7, **When** se lo vuelve a pendiente, **Then** el
+   pago de 60 deja de contar y las pendientes se recalculan: vuelve a quedar "Beto le paga 100 a
+   Ana".
 
 ---
 
@@ -205,9 +238,10 @@ consulta la muestra pagada; se la vuelve a pendiente y se muestra pendiente.
 - **Pagos que superan lo que se debía** (porque después cambiaron los gastos): la diferencia
   aparece como una liquidación pendiente en sentido inverso.
 - **Todos los participantes pagaron lo mismo**: no genera transferencias.
-- **Montos que no se dividen en centavos exactos** (p. ej. 100 entre 3): los montos se redondean
-  a centavos y el centavo sobrante se asigna de forma determinista, de modo que lo pagado y lo
-  recibido sumen exactamente lo mismo y dos consultas iguales den siempre el mismo resultado.
+- **Montos que no se dividen en centavos exactos** (p. ej. 100 entre 3): la parte de cada
+  participante se redondea hacia abajo al centavo y los centavos sobrantes los absorbe quien más
+  pagó en la categoría (su parte aumenta y recibe esos centavos menos). Si hay empate entre
+  quienes más pagaron, los absorbe el que se sumó primero a la categoría.
 - **Un miembro que participa en varias categorías**: sus saldos se combinan entre categorías
   antes de generar las transferencias.
 - **Invitados sin cuenta**: participan del reparto igual que los miembros con cuenta.
@@ -226,6 +260,8 @@ consulta la muestra pagada; se la vuelve a pendiente y se muestra pendiente.
 - **Cuenta eliminada o token vencido** a mitad de una operación: se rechaza como no autenticada
   (comportamiento de la Fase 1).
 - **Dos personas editan el mismo gasto a la vez**: queda guardada la última modificación.
+- **Marcar una liquidación que dejó de existir** (porque un cambio la reemplazó entre la consulta
+  y el marcado): se rechaza pidiendo volver a consultar las liquidaciones.
 - **Montos muy grandes**: se aceptan hasta 9.999.999.999,99; los mayores se rechazan.
 
 ## Requirements *(mandatory)*
@@ -313,17 +349,28 @@ consulta la muestra pagada; se la vuelve a pendiente y se muestra pendiente.
   app actual con las mismas entradas: las mismas transferencias entre las mismas personas, con
   los montos redondeados a centavos.
 - **FR-023**: El cálculo DEBE conservar el saldo neto de cada miembro: lo que cada uno paga o
-  recibe en total DEBE ser igual a la diferencia entre lo que aportó y lo que le corresponde
-  aportar, con un error máximo de un centavo por miembro debido al redondeo.
+  recibe en total (sumando liquidaciones pendientes y pagadas) DEBE ser exactamente igual a la
+  diferencia entre lo que aportó y su parte, donde la parte de cada categoría es la que define
+  FR-024a. La parte puede diferir del promedio exacto solo por el redondeo a centavos de FR-024a.
 - **FR-024**: Los montos de las liquidaciones DEBEN estar redondeados a centavos; la suma de lo
   que se paga DEBE ser exactamente igual a la suma de lo que se recibe y NO DEBEN aparecer
   transferencias de menos de un centavo.
+- **FR-024a**: En cada categoría, la parte de cada participante DEBE ser el total dividido por la
+  cantidad de participantes, redondeado hacia abajo al centavo. Los centavos que falten para
+  llegar al total DEBEN sumarse a la parte de quien más pagó en esa categoría (con empate, al
+  que se sumó primero a la categoría).
 - **FR-025**: El cálculo DEBE ser determinista: las mismas entradas DEBEN producir siempre las
   mismas transferencias, en el mismo orden.
 - **FR-026**: El cálculo oficial DEBE hacerse en el sistema (no en el cliente) y sus resultados
   DEBEN guardarse como liquidaciones del grupo.
-- **FR-027**: Las liquidaciones pendientes DEBEN reflejar el estado actual de los gastos y de los
-  pagos cada vez que se consultan; las pendientes anteriores se reemplazan por el nuevo cálculo.
+- **FR-027**: Las liquidaciones pendientes DEBEN recalcularse cada vez que cambia algo que las
+  afecta (alta, modificación o baja de gastos; cambios en los participantes de una categoría;
+  baja de categorías o miembros; marcar o desmarcar un pago), y solo entonces; las pendientes
+  anteriores se reemplazan por el nuevo cálculo. Consultar las liquidaciones NO DEBE modificarlas:
+  mientras no cambie nada, las pendientes conservan sus identificadores y montos.
+- **FR-027c**: Marcar como pagada una liquidación pendiente que ya fue reemplazada por un recálculo
+  DEBE rechazarse con un mensaje que indique que las liquidaciones cambiaron y hay que volver a
+  consultarlas.
 - **FR-027a**: Las liquidaciones pagadas DEBEN conservarse sin cambios como pagos realizados. El
   cálculo de las pendientes DEBE descontar lo ya pagado: cada pago reduce la deuda del deudor y
   lo que le corresponde recibir al acreedor. Si lo pagado supera lo que se debía, la diferencia
@@ -334,9 +381,16 @@ consulta la muestra pagada; se la vuelve a pendiente y se muestra pendiente.
 
 **Estado de pago**
 
-- **FR-028**: Un participante del grupo DEBE poder marcar una liquidación pendiente como pagada o
-  volver una pagada a pendiente. El sistema DEBE registrar cuándo se marcó como pagada. Al volver
-  a pendiente, deja de contar como pago realizado y entra en el próximo recálculo.
+- **FR-028**: Solo el deudor o el acreedor de una liquidación (si son miembros con cuenta) o el
+  dueño del grupo DEBEN poder registrar un pago sobre ella o volver un pago a pendiente; para
+  cualquier otro participante la operación DEBE rechazarse por falta de permisos. El sistema DEBE
+  registrar cuándo y qué usuario registró cada pago. Al volver un pago a pendiente, deja de
+  contar como pago realizado y las pendientes se recalculan (FR-027).
+- **FR-028a**: Al registrar un pago sobre una liquidación pendiente se PUEDE indicar el monto
+  pagado; si no se indica, es el monto completo. El monto DEBE ser mayor que cero, tener como
+  máximo dos decimales y no superar el de la liquidación. El pago queda guardado como una
+  liquidación pagada por ese monto (mismo deudor y acreedor) y, si fue parcial, lo que falta se
+  recalcula como pendiente (FR-027a).
 
 **Validación y errores** (continúan las reglas de la Fase 1)
 
@@ -359,7 +413,8 @@ consulta la muestra pagada; se la vuelve a pendiente y se muestra pendiente.
 - **Gasto**: pago individual dentro de una categoría: quién pagó (un participante), monto,
   descripción, fecha y el usuario que lo cargó.
 - **Liquidación**: transferencia entre dos miembros (deudor → acreedor), con monto, estado
-  pagada/pendiente y fecha en que se marcó como pagada. Las pagadas son el historial de pagos
+  pagada/pendiente, fecha en que se marcó como pagada y usuario que la marcó. Un pago parcial se
+  guarda como una liquidación pagada por el monto abonado. Las pagadas son el historial de pagos
   realizados; las pendientes son el resultado del último cálculo.
 
 ## Success Criteria *(mandatory)*
@@ -371,11 +426,11 @@ consulta la muestra pagada; se la vuelve a pendiente y se muestra pendiente.
   invitados sin cuenta y cadenas de deuda), el 100 % de los resultados del sistema coincide con
   el de la app actual, redondeado a centavos.
 - **SC-002**: En el 100 % de los cálculos, la suma de lo que se paga es igual a la suma de lo que
-  se recibe y ningún miembro queda con una diferencia mayor a un centavo respecto de su saldo neto,
-  contando los pagos ya realizados.
+  se recibe y cada miembro queda exactamente con su saldo neto (lo aportado menos su parte según
+  FR-024a), contando los pagos ya realizados, sin diferencias residuales.
 - **SC-007**: En el 100 % de los escenarios con liquidaciones pagadas, después de cualquier cambio
   en los gastos, las pagadas se conservan sin cambios y la suma de pagadas más pendientes deja a
-  cada miembro con su saldo neto equilibrado (con un error máximo de un centavo).
+  cada miembro con su saldo neto exactamente equilibrado (FR-023).
 - **SC-003**: Calcular las liquidaciones de un grupo de hasta 20 miembros, 10 categorías y 500
   gastos tarda menos de 2 segundos en el 95 % de las consultas en el entorno de desarrollo.
 - **SC-004**: El 100 % de los intentos de ver o modificar un grupo o sus recursos por parte de

@@ -7,7 +7,7 @@ en [data-model.md](data-model.md).
 ## Requisitos
 
 - Docker Desktop (con Docker Compose v2).
-- Node.js ≥ 22 y npm, solo para correr los tests o el servidor fuera de Docker.
+- Node.js ≥ 24 y npm (desde la Fase 2), solo para correr los tests o el servidor fuera de Docker.
 - `curl` (viene con Git Bash en Windows).
 
 ## 1. Configuración
@@ -102,6 +102,7 @@ contenedor termina con un mensaje que nombra `JWT_SECRET`. Volver a dejar la var
 Con el contenedor `db` levantado:
 
 ```bash
+npm install          # en la raíz (desde la Fase 2, el cálculo usa src/utils de la SPA)
 cd server
 npm install
 npm test

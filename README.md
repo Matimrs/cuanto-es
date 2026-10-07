@@ -27,13 +27,14 @@ También puedes acceder a la aplicación en línea: [Distribution App](https://d
 
 ## Backend (server/)
 
-API de CuantoEs (Node + Express + Prisma + PostgreSQL). Por ahora expone
-`POST /auth/register`, `POST /auth/login` y `GET /auth/me`.
+API de CuantoEs (Node + Express + Prisma + PostgreSQL). Expone la autenticación (`/auth/*`) y
+la gestión de grupos, miembros, categorías, gastos y liquidaciones (`/groups/*`). Las
+liquidaciones se calculan con el mismo algoritmo de la app (`src/utils/calculate.js`).
 
 ### Requisitos
 
 - Docker Desktop (con Docker Compose v2).
-- Node.js 22 o superior y npm, solo para correr los tests o el servidor fuera de Docker.
+- Node.js 24 o superior y npm, solo para correr los tests o el servidor fuera de Docker.
 
 ### Levantar el backend
 
@@ -71,6 +72,7 @@ API de CuantoEs (Node + Express + Prisma + PostgreSQL). Por ahora expone
 Con el contenedor `db` levantado (`docker compose up -d db`):
 
 ```bash
+npm install          # en la raíz: el cálculo usa src/utils/calculate.js, que importa `uuid`
 cd server
 npm install
 npm test

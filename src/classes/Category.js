@@ -1,5 +1,5 @@
-import idGenerator from "../utils/idGenerator";
-import Peer from "./Peer";
+import idGenerator from "../utils/idGenerator.js";
+import Peer from "./Peer.js";
 
 class Category {
   constructor(categorys, name, id = null) {

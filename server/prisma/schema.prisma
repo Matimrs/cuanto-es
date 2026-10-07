@@ -1,5 +1,6 @@
-// Modelo de datos de CuantoEs (specs/001-backend-auth-base/data-model.md).
-// Las reglas que Prisma no expresa (CHECK) están en la migración inicial (research R10).
+// Modelo de datos de CuantoEs (specs/001-backend-auth-base/data-model.md y
+// specs/002-groups-expenses-settlements/data-model.md).
+// Las reglas que Prisma no expresa (CHECK, índices por expresión) están en las migraciones.
 
 generator client {
   provider = "prisma-client-js"
@@ -11,43 +12,48 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(uuid()) @db.Uuid
-  name         String        @db.VarChar(100)
-  email        String        @unique @db.VarChar(254)
-  passwordHash String        @map("password_hash") @db.VarChar(60)
-  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamptz
-  ownedGroups  Group[]
-  memberships  GroupMember[]
+  id                String        @id @default(uuid()) @db.Uuid
+  name              String        @db.VarChar(100)
+  email             String        @unique @db.VarChar(254)
+  passwordHash      String        @map("password_hash") @db.VarChar(60)
+  createdAt         DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime      @updatedAt @map("updated_at") @db.Timestamptz
+  ownedGroups       Group[]
+  memberships       GroupMember[]
+  categoriesCreated Category[]
+  expensesCreated   Expense[]
+  paymentsMarked    Settlement[]
 
   @@map("users")
 }
 
 model Group {
-  id          String        @id @default(uuid()) @db.Uuid
-  name        String        @db.VarChar(100)
-  ownerId     String        @map("owner_id") @db.Uuid
-  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz
-  owner       User          @relation(fields: [ownerId], references: [id], onDelete: Restrict)
-  members     GroupMember[]
-  categories  Category[]
-  expenses    Expense[]
-  settlements Settlement[]
+  id                   String                @id @default(uuid()) @db.Uuid
+  name                 String                @db.VarChar(100)
+  ownerId              String                @map("owner_id") @db.Uuid
+  createdAt            DateTime              @default(now()) @map("created_at") @db.Timestamptz
+  owner                User                  @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  members              GroupMember[]
+  categories           Category[]
+  categoryParticipants CategoryParticipant[]
+  expenses             Expense[]
+  settlements          Settlement[]
 
   @@map("groups")
 }
 
 model GroupMember {
-  id                    String       @id @default(uuid()) @db.Uuid
-  groupId               String       @map("group_id") @db.Uuid
-  userId                String?      @map("user_id") @db.Uuid
-  alias                 String?      @db.VarChar(100)
-  createdAt             DateTime     @default(now()) @map("created_at") @db.Timestamptz
-  group                 Group        @relation(fields: [groupId], references: [id], onDelete: Restrict)
-  user                  User?        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  id                    String                @id @default(uuid()) @db.Uuid
+  groupId               String                @map("group_id") @db.Uuid
+  userId                String?               @map("user_id") @db.Uuid
+  alias                 String?               @db.VarChar(100)
+  createdAt             DateTime              @default(now()) @map("created_at") @db.Timestamptz
+  group                 Group                 @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user                  User?                 @relation(fields: [userId], references: [id], onDelete: Restrict)
+  participations        CategoryParticipant[]
   expensesPaid          Expense[]
-  settlementsAsCreditor Settlement[] @relation("SettlementCreditor")
-  settlementsAsDebtor   Settlement[] @relation("SettlementDebtor")
+  settlementsAsCreditor Settlement[]          @relation("SettlementCreditor")
+  settlementsAsDebtor   Settlement[]          @relation("SettlementDebtor")
 
   @@unique([groupId, userId])
   @@unique([id, groupId])
@@ -55,33 +61,57 @@ model GroupMember {
 }
 
 model Category {
-  id        String    @id @default(uuid()) @db.Uuid
-  groupId   String    @map("group_id") @db.Uuid
-  name      String    @db.VarChar(100)
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
-  group     Group     @relation(fields: [groupId], references: [id], onDelete: Restrict)
-  expenses  Expense[]
+  id           String                @id @default(uuid()) @db.Uuid
+  groupId      String                @map("group_id") @db.Uuid
+  name         String                @db.VarChar(100)
+  createdById  String                @map("created_by_id") @db.Uuid
+  createdAt    DateTime              @default(now()) @map("created_at") @db.Timestamptz
+  group        Group                 @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdBy    User                  @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  participants CategoryParticipant[]
+  expenses     Expense[]
 
-  @@unique([groupId, name])
+  // La unicidad del nombre sin distinguir mayúsculas es un índice por expresión (migración).
   @@unique([id, groupId])
   @@map("categories")
 }
 
+// Miembros que participan del reparto de una categoría (FR-015), hayan pagado o no.
+model CategoryParticipant {
+  id         String      @id @default(uuid()) @db.Uuid
+  categoryId String      @map("category_id") @db.Uuid
+  groupId    String      @map("group_id") @db.Uuid
+  memberId   String      @map("member_id") @db.Uuid
+  createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamptz
+  group      Group       @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  category   Category    @relation(fields: [categoryId, groupId], references: [id, groupId], onDelete: Cascade)
+  member     GroupMember @relation(fields: [memberId, groupId], references: [id, groupId], onDelete: Cascade)
+  expenses   Expense[]
+
+  @@unique([categoryId, memberId])
+  @@map("category_participants")
+}
+
 model Expense {
-  id          String      @id @default(uuid()) @db.Uuid
-  groupId     String      @map("group_id") @db.Uuid
-  categoryId  String      @map("category_id") @db.Uuid
-  paidById    String      @map("paid_by_id") @db.Uuid
-  amount      Decimal     @db.Decimal(12, 2)
-  description String?     @db.VarChar(200)
-  date        DateTime    @db.Date
-  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz
-  group       Group       @relation(fields: [groupId], references: [id], onDelete: Restrict)
-  // FK compuestas: la categoría y quien pagó deben ser del mismo grupo (FR-019).
-  category    Category    @relation(fields: [categoryId, groupId], references: [id, groupId], onDelete: Restrict)
-  paidBy      GroupMember @relation(fields: [paidById, groupId], references: [id, groupId], onDelete: Restrict)
+  id          String              @id @default(uuid()) @db.Uuid
+  groupId     String              @map("group_id") @db.Uuid
+  categoryId  String              @map("category_id") @db.Uuid
+  paidById    String              @map("paid_by_id") @db.Uuid
+  amount      Decimal             @db.Decimal(12, 2)
+  description String?             @db.VarChar(200)
+  date        DateTime            @db.Date
+  createdById String              @map("created_by_id") @db.Uuid
+  createdAt   DateTime            @default(now()) @map("created_at") @db.Timestamptz
+  group       Group               @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  // FK compuestas: la categoría y quien pagó deben ser del mismo grupo (FR-019 de la 001).
+  category    Category            @relation(fields: [categoryId, groupId], references: [id, groupId], onDelete: Cascade)
+  paidBy      GroupMember         @relation(fields: [paidById, groupId], references: [id, groupId], onDelete: NoAction)
+  // Quien pagó es participante de la categoría (FR-018, FR-015a).
+  participant CategoryParticipant @relation(fields: [categoryId, paidById], references: [categoryId, memberId], onDelete: NoAction)
+  createdBy   User                @relation(fields: [createdById], references: [id], onDelete: Restrict)
 
   @@index([categoryId])
+  @@index([groupId])
   @@map("expenses")
 }
 
@@ -92,11 +122,16 @@ model Settlement {
   debtorId   String      @map("debtor_id") @db.Uuid
   amount     Decimal     @db.Decimal(12, 2)
   paid       Boolean     @default(false)
+  paidAt     DateTime?   @map("paid_at") @db.Timestamptz
+  paidById   String?     @map("paid_by_id") @db.Uuid
+  position   Int         @default(0)
   createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamptz
-  group      Group       @relation(fields: [groupId], references: [id], onDelete: Restrict)
-  // FK compuestas: acreedor y deudor deben ser miembros del mismo grupo (FR-018).
-  creditor   GroupMember @relation("SettlementCreditor", fields: [creditorId, groupId], references: [id, groupId], onDelete: Restrict)
-  debtor     GroupMember @relation("SettlementDebtor", fields: [debtorId, groupId], references: [id, groupId], onDelete: Restrict)
+  group      Group       @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  // FK compuestas: acreedor y deudor deben ser miembros del mismo grupo (FR-018 de la 001).
+  creditor   GroupMember @relation("SettlementCreditor", fields: [creditorId, groupId], references: [id, groupId], onDelete: NoAction)
+  debtor     GroupMember @relation("SettlementDebtor", fields: [debtorId, groupId], references: [id, groupId], onDelete: NoAction)
+  paidBy     User?       @relation(fields: [paidById], references: [id], onDelete: Restrict)
 
+  @@index([groupId, paid])
   @@map("settlements")
 }

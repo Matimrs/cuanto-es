@@ -19,7 +19,10 @@ services:
       retries: 10
 
   api:
-    build: ./server
+    # Contexto en la raíz: la imagen incluye src/classes y src/utils del cliente (Fase 2).
+    build:
+      context: .
+      dockerfile: server/Dockerfile
     env_file: ./server/.env
     ports:
       - "3001:3001"

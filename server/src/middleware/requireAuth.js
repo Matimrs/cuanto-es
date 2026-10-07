@@ -2,8 +2,7 @@ const prisma = require('../models/prisma');
 const HttpError = require('../lib/httpError');
 const { verifyToken } = require('../lib/tokens');
 const { toPublicUser } = require('../lib/users');
-
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const { UUID_RE } = require('../lib/ids');
 
 function unauthenticated() {
   return new HttpError(401, 'UNAUTHENTICATED', 'Necesitás iniciar sesión');

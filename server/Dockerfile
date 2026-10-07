@@ -1,12 +1,20 @@
-FROM node:22-alpine
+# Contexto de build: la raíz del repo (docker-compose.yml), para incluir el dominio del cliente
+# (src/classes, src/utils), que el servidor reutiliza para calcular las liquidaciones (research R10).
+FROM node:24-alpine
 
-WORKDIR /app
+WORKDIR /repo/server
 
-COPY package*.json ./
-COPY prisma ./prisma
+COPY server/package*.json ./
+COPY server/prisma ./prisma
 RUN npm ci --omit=dev && npx prisma generate
 
-COPY src ./src
+COPY server/src ./src
+COPY src/classes /repo/src/classes
+COPY src/utils /repo/src/utils
+
+# src/classes/Peer.js importa `uuid`: Node lo busca subiendo desde /repo/src, así que se enlaza
+# el node_modules del servidor en la raíz del layout.
+RUN ln -s /repo/server/node_modules /repo/node_modules
 
 EXPOSE 3001
 

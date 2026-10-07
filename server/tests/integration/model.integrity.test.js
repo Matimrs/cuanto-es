@@ -20,6 +20,7 @@ function expense(data) {
       paidById: anaMember.id,
       amount: '100.00',
       date: TODAY,
+      createdById: owner.id,
       ...data,
     },
   });
@@ -47,8 +48,20 @@ beforeEach(async () => {
   anaMember = await prisma.groupMember.create({ data: { groupId: group.id, userId: ana.id } });
   guest = await prisma.groupMember.create({ data: { groupId: group.id, alias: 'Beto' } });
   otherMember = await prisma.groupMember.create({ data: { groupId: otherGroup.id, alias: 'Caro' } });
-  category = await prisma.category.create({ data: { groupId: group.id, name: 'Nafta' } });
-  otherCategory = await prisma.category.create({ data: { groupId: otherGroup.id, name: 'Súper' } });
+  // Desde la Fase 2, cada categoría registra quién la creó y quiénes participan del reparto.
+  category = await prisma.category.create({
+    data: { groupId: group.id, name: 'Nafta', createdById: owner.id },
+  });
+  otherCategory = await prisma.category.create({
+    data: { groupId: otherGroup.id, name: 'Súper', createdById: owner.id },
+  });
+  await prisma.categoryParticipant.createMany({
+    data: [
+      { categoryId: category.id, groupId: group.id, memberId: anaMember.id },
+      { categoryId: category.id, groupId: group.id, memberId: guest.id },
+      { categoryId: otherCategory.id, groupId: otherGroup.id, memberId: otherMember.id },
+    ],
+  });
 });
 afterAll(disconnect);
 
@@ -163,13 +176,13 @@ describe('FR-019: gastos dentro del mismo grupo', () => {
 describe('FR-020: categorías', () => {
   test('rechaza un nombre repetido dentro del grupo', async () => {
     await expect(
-      prisma.category.create({ data: { groupId: group.id, name: 'Nafta' } }),
+      prisma.category.create({ data: { groupId: group.id, name: 'Nafta', createdById: owner.id } }),
     ).rejects.toMatchObject({ code: 'P2002' });
   });
 
   test('el mismo nombre se permite en otro grupo', async () => {
     await expect(
-      prisma.category.create({ data: { groupId: otherGroup.id, name: 'Nafta' } }),
+      prisma.category.create({ data: { groupId: otherGroup.id, name: 'Nafta', createdById: owner.id } }),
     ).resolves.toBeDefined();
   });
 });
