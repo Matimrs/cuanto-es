@@ -1,0 +1,181 @@
+openapi: 3.0.3
+info:
+  title: CuantoEs API — Autenticación (Fase 1)
+  version: 0.1.0
+  description: >
+    Endpoints de autenticación de la Fase 1. Todos los cuerpos son JSON (UTF-8).
+    Los mensajes de error están en castellano. Los campos desconocidos del cuerpo se ignoran.
+servers:
+  - url: http://localhost:3001
+    description: Desarrollo (docker compose)
+
+paths:
+  /auth/register:
+    post:
+      summary: Registrar una cuenta nueva
+      description: Crea el usuario y devuelve sus datos públicos y un token (inicio de sesión automático).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RegisterRequest' }
+            example: { name: Ana, email: ' ANA@Ejemplo.com ', password: 'secreta123' }
+      responses:
+        '201':
+          description: Cuenta creada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '409':
+          description: El email ya pertenece a otra cuenta
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example:
+                error: { code: EMAIL_TAKEN, message: Ese email ya está registrado }
+        '503': { $ref: '#/components/responses/ServiceUnavailable' }
+
+  /auth/login:
+    post:
+      summary: Iniciar sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginRequest' }
+      responses:
+        '200':
+          description: Credenciales correctas
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401':
+          description: >
+            Credenciales inválidas. La respuesta es idéntica exista o no el email (FR-008).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example:
+                error: { code: INVALID_CREDENTIALS, message: Email o contraseña incorrectos }
+        '503': { $ref: '#/components/responses/ServiceUnavailable' }
+
+  /auth/me:
+    get:
+      summary: Consultar la identidad propia
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Token válido
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [user]
+                properties:
+                  user: { $ref: '#/components/schemas/UserPublic' }
+        '401':
+          description: Token ausente, mal formado, alterado, vencido o de un usuario inexistente
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example:
+                error: { code: UNAUTHENTICATED, message: Necesitás iniciar sesión }
+        '503': { $ref: '#/components/responses/ServiceUnavailable' }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'JWT HS256, claim sub = id del usuario, vence a los 7 días.'
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required: [name, email, password]
+      properties:
+        name:
+          type: string
+          description: 1–100 caracteres después de recortar espacios
+        email:
+          type: string
+          format: email
+          description: Se normaliza (trim + minúsculas) antes de validar
+        password:
+          type: string
+          description: Entre 8 caracteres y 72 bytes UTF-8. No se recorta.
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, description: Se normaliza (trim + minúsculas) }
+        password: { type: string }
+
+    UserPublic:
+      type: object
+      required: [id, name, email]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        email: { type: string, format: email }
+
+    AuthResponse:
+      type: object
+      required: [user, token]
+      properties:
+        user: { $ref: '#/components/schemas/UserPublic' }
+        token: { type: string, description: JWT de acceso }
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum:
+                - VALIDATION_ERROR
+                - EMAIL_TAKEN
+                - INVALID_CREDENTIALS
+                - UNAUTHENTICATED
+                - NOT_FOUND
+                - SERVICE_UNAVAILABLE
+                - INTERNAL_ERROR
+            message: { type: string }
+            fields:
+              type: object
+              additionalProperties: { type: string }
+              description: Solo en VALIDATION_ERROR — campo → motivo
+
+  responses:
+    ValidationError:
+      description: Cuerpo vacío, JSON mal formado o campos inválidos
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example:
+            error:
+              code: VALIDATION_ERROR
+              message: Hay datos inválidos
+              fields:
+                email: Ingresá un email válido
+                password: La contraseña debe tener al menos 8 caracteres
+    ServiceUnavailable:
+      description: La base de datos no está disponible
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example:
+            error: { code: SERVICE_UNAVAILABLE, message: El servicio no está disponible. Probá de nuevo en unos minutos. }
+
+# Respuestas transversales (no ligadas a una ruta):
+#   - Ruta inexistente → 404 { error: { code: NOT_FOUND, message: "Recurso no encontrado" } }
+#   - Error inesperado → 500 { error: { code: INTERNAL_ERROR, message: "Ocurrió un error inesperado" } }

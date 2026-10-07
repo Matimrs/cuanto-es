@@ -1,6 +1,28 @@
 <!--
 Sync Impact Report
 ==================
+Version change: 2.0.0 → 2.1.0 (MINOR)
+Motivo: hallazgos C3 y C4 de /speckit-analyze sobre specs/001-backend-auth-base.
+Modified principles:
+  - VI. Seguridad y Privacidad de los Datos (sin renombrar): el control de acceso a un grupo
+    admite al miembro con cuenta o al propietario; propietario y miembro son roles
+    independientes (alinea con la Clarification de la spec 001 y su FR-021). Se amplía la
+    guía; no se elimina ninguna exigencia (sigue siendo obligatorio verificar el acceso).
+Added sections:
+  - Restricciones Técnicas → "Transición al monorepo": la SPA puede seguir en la raíz hasta
+    una feature dedicada, que DEBE completarse antes de terminar la Fase 3.
+Modified sections: ninguna otra.
+Removed sections: ninguna.
+Templates / dependientes: no se modifican (leen la constitución en tiempo de ejecución).
+  - ⚠ specs/001-backend-auth-base/plan.md: las dos filas de Complexity Tracking (SPA en la
+    raíz; dueño no miembro) ya no son violaciones; conviene actualizarlas.
+Follow-up TODOs:
+  - TODO(DEPLOY_TARGET): sin cambios (sigue pendiente).
+  - El TODO anterior "la migración al monorepo queda como tarea de la Fase 1" se reemplaza por
+    la regla de transición (feature propia, antes de terminar la Fase 3).
+
+Historial previo
+----------------
 Version change: 1.0.0 → 2.0.0 (MAJOR)
 Motivo: se incorpora docs/CLAUDE.md. El Principio V ("100% en el cliente, sin backend") se
 redefine de forma incompatible: el proyecto pasa a ser un sistema cliente-servidor con
@@ -131,7 +153,10 @@ diagrama de clases que pide la cátedra.
 - La autenticación DEBE usar JWT sin sesiones del lado del servidor. Todo endpoint, salvo
   `/auth/*`, DEBE exigir un token válido mediante middleware.
 - Cada endpoint que acceda a un grupo o a sus recursos (categorías, gastos, settlements) DEBE
-  comprobar que el usuario autenticado es miembro de ese grupo.
+  comprobar que el usuario autenticado es miembro con cuenta de ese grupo o su propietario.
+  Ser propietario y ser miembro son roles independientes: el propietario puede administrar el
+  grupo sin ser miembro, pero sólo puede pagar gastos o figurar en settlements si además es
+  miembro. Cualquier otro usuario autenticado DEBE recibir un rechazo.
 - Toda entrada a la API DEBE validarse en middleware antes de llegar a los controladores.
 - Los secretos (credenciales de la base de datos, secreto JWT, tokens de Mercado Pago) DEBEN
   vivir en `server/.env`, que NUNCA se commitea. DEBE mantenerse un `server/.env.example`
@@ -165,6 +190,11 @@ app original, y son la base del dashboard y de la exportación.
   - `server/src/{routes,controllers,models,middleware}` e `index.js`.
   - `server/prisma/schema.prisma`.
   - `docker-compose.yml` y `CLAUDE.md` en la raíz.
+- **Transición al monorepo**: mientras no se haga la feature dedicada a mover la app React a
+  `client/`, la SPA PUEDE seguir en la raíz (`src/`, `public/`, `package.json`) y `server/`
+  convive a su lado. Esa mudanza DEBE hacerse en una feature propia (no mezclada con trabajo de
+  backend) y DEBE completarse antes de terminar la Fase 3 del roadmap (cliente consumiendo la
+  API). Hasta entonces, las features no necesitan justificar este desvío en Complexity Tracking.
 - **Modelo de datos base**: `User`, `Group`, `GroupMember`, `Category`, `Expense`, `Settlement`,
   según `docs/CLAUDE.md` §4.
 - **Contenedores**: Docker Compose levanta `db` (postgres:16) y `api` (puerto 3001). El cliente
@@ -228,4 +258,4 @@ Una feature que adelanta una fase posterior DEBE justificarlo en su plan.
 - Cada plan y cada revisión de código DEBE verificar el cumplimiento de los principios; la
   complejidad adicional DEBE justificarse explícitamente.
 
-**Version**: 2.0.0 | **Ratified**: 2026-10-07 | **Last Amended**: 2026-10-07
+**Version**: 2.1.0 | **Ratified**: 2026-10-07 | **Last Amended**: 2026-10-07
