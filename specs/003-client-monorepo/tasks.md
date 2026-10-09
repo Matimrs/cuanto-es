@@ -142,12 +142,14 @@ comparado idéntico con la línea de base y recorrido manual sin diferencias.
   - *Estado 2026-10-08*: build OK; `diff` de los logs sin diferencias (mismas 3 advertencias);
     `diff -r` de los dos `build/` **sin diferencias** (bundle `main.9fec9b0f.js`, el mismo que
     publica `cuanto-es.netlify.app`). Pruebas del cliente: misma salida, código 0 ✅
-- [ ] T010 [US1] Recorrido manual (SC-003): `npm start` en `client/` y seguir los 5 pasos de
+- [X] T010 [US1] Recorrido manual (SC-003): `npm start` en `client/` y seguir los 5 pasos de
   `quickstart.md` §3 "Recorrido manual", también en un ancho de 320 px. Comparar con la misma
   carga en `https://cuanto-es.netlify.app/`, que sirve exactamente el build de la línea de base
   (mismo hash, R4). Si el agente no puede abrir un navegador, pedirle al
   usuario que haga el recorrido y registrar su resultado
-- [X] T011  [US1] **⏸ commit** Sugerir `Ignora artefactos de client/ y versiona la configuración de Netlify`
+  - *Estado 2026-10-08*: recorrido hecho por el usuario con `npm start` en `client/`
+    (puerto 3000): los flujos funcionan bien ✅
+- [X] T011 [US1] **⏸ commit** Sugerir `Ignora artefactos de client/ y versiona la configuración de Netlify`
   para `.gitignore` y `netlify.toml`
   - *Estado 2026-10-08*: commit `75587798` ✅
 
@@ -204,7 +206,7 @@ contenedor.
     la Fase 2, con un script contra `http://localhost:3001`: **15 OK** (paso 12: Dani→Ana 40.00 y
     Dani→Beto 10.00, coincide con la cuenta a mano) ✅. En Git Bash, `docker compose exec` con
     rutas necesita `MSYS_NO_PATHCONV=1`
-- [X] T019  [US2] **⏸ commit** Sugerir `Apunta el servidor y la imagen Docker al dominio en client/`
+- [X] T019 [US2] **⏸ commit** Sugerir `Apunta el servidor y la imagen Docker al dominio en client/`
   para los cinco archivos de T012–T017
   - *Estado 2026-10-08*: commit `9e6eb86f` ✅
 
@@ -251,7 +253,7 @@ búsqueda de referencias residuales de `quickstart.md` §6 sin resultados.
   rutas del dominio del cliente (las de `server/` quedan)
   - *Estado 2026-10-08*: solo `diagrama-de-clases.md:70` mencionaba `src/`; los otros dos
     entregables no tienen rutas del dominio del cliente ✅
-- [X] T023  [US3] **⏸ commit** Sugerir `Actualiza la documentación a la estructura client/ + server/`
+- [X] T023 [US3] **⏸ commit** Sugerir `Actualiza la documentación a la estructura client/ + server/`
   - *Estado 2026-10-08*: commit `38f5890a` ✅
 
 **Checkpoint**: las tres historias completas.
