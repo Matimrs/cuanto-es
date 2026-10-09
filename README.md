@@ -77,6 +77,7 @@ cd client
 npm install          # el cálculo usa client/src/utils/calculate.js, que importa `uuid`
 cd ../server
 npm install
+npx prisma generate  # genera el cliente de Prisma (npm install no siempre lo hace)
 npm test
 ```
 

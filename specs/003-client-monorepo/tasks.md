@@ -147,8 +147,9 @@ comparado idéntico con la línea de base y recorrido manual sin diferencias.
   carga en `https://cuanto-es.netlify.app/`, que sirve exactamente el build de la línea de base
   (mismo hash, R4). Si el agente no puede abrir un navegador, pedirle al
   usuario que haga el recorrido y registrar su resultado
-- [ ] T011 [US1] **⏸ commit** Sugerir `Ignora artefactos de client/ y versiona la configuración de Netlify`
+- [X] T011  [US1] **⏸ commit** Sugerir `Ignora artefactos de client/ y versiona la configuración de Netlify`
   para `.gitignore` y `netlify.toml`
+  - *Estado 2026-10-08*: commit `75587798` ✅
 
 **Checkpoint**: el cliente funciona desde `client/` y el sitio tiene configuración versionada.
 
@@ -203,8 +204,9 @@ contenedor.
     la Fase 2, con un script contra `http://localhost:3001`: **15 OK** (paso 12: Dani→Ana 40.00 y
     Dani→Beto 10.00, coincide con la cuenta a mano) ✅. En Git Bash, `docker compose exec` con
     rutas necesita `MSYS_NO_PATHCONV=1`
-- [ ] T019 [US2] **⏸ commit** Sugerir `Apunta el servidor y la imagen Docker al dominio en client/`
+- [X] T019  [US2] **⏸ commit** Sugerir `Apunta el servidor y la imagen Docker al dominio en client/`
   para los cinco archivos de T012–T017
+  - *Estado 2026-10-08*: commit `9e6eb86f` ✅
 
 **Checkpoint**: backend completo sobre la nueva estructura.
 
@@ -249,7 +251,8 @@ búsqueda de referencias residuales de `quickstart.md` §6 sin resultados.
   rutas del dominio del cliente (las de `server/` quedan)
   - *Estado 2026-10-08*: solo `diagrama-de-clases.md:70` mencionaba `src/`; los otros dos
     entregables no tienen rutas del dominio del cliente ✅
-- [ ] T023 [US3] **⏸ commit** Sugerir `Actualiza la documentación a la estructura client/ + server/`
+- [X] T023  [US3] **⏸ commit** Sugerir `Actualiza la documentación a la estructura client/ + server/`
+  - *Estado 2026-10-08*: commit `38f5890a` ✅
 
 **Checkpoint**: las tres historias completas.
 
@@ -270,19 +273,31 @@ búsqueda de referencias residuales de `quickstart.md` §6 sin resultados.
   - *Estado 2026-10-08*: raíz con `client/`, `docker-compose.yml`, `docs/`, `netlify.toml`,
     `README.md`, `server/` y `specs/`; 37 archivos en `client/`; `git diff e4eceac3 -- client/`
     vacío; historial verificado en T005 ✅
-- [ ] T026 Prueba de un integrante nuevo (SC-008, US3): en una carpeta temporal fuera del repo,
+- [X] T026 Prueba de un integrante nuevo (SC-008, US3): en una carpeta temporal fuera del repo,
   `git clone` del repositorio local y `git checkout feature/003-client-monorepo`; seguir **solo**
   el README para instalar y levantar el cliente y correr las pruebas del servidor (con la base de
   `quickstart.md` §4). Medir el tiempo sin contar la descarga de dependencias. Esperado: menos
   de 15 minutos y ningún paso que falle. Lo ideal es que lo haga un integrante que no participó;
   si no hay quién, lo hace el agente y lo anota en la nota de estado. Al terminar, borrar la
   carpeta temporal
-- [ ] T027 Verificación previa al merge (constitución, Flujo de trabajo: `npm test` en los
+  - *Estado 2026-10-08*: lo hizo el agente en un clon de `38f5890a` dentro del scratchpad. Se
+    copió `server/.env` local en lugar de partir de `.env.example`, porque la base del compose ya
+    estaba inicializada con esas credenciales. Cliente: `npm install` y build OK. Servidor:
+    **13 suites fallaron** con "@prisma/client did not initialize yet": `npm install` (npm
+    11.18) no generó el cliente de Prisma y el README no lo indicaba. Es un hueco anterior a
+    esta feature (README de la Fase 1). Con `npx prisma generate`: **265 passed**. Se agregó ese
+    paso al bloque de Tests del README. Tiempo total ≈ 4 min sin contar el diagnóstico (< 15 min)
+    ✅. Clon borrado
+- [X] T027 Verificación previa al merge (constitución, Flujo de trabajo: `npm test` en los
   paquetes afectados): `npm test` en `server/` (265 en verde);
   `CI=true npm test -- --watchAll=false --passWithNoTests` en `client/` (código 0, misma salida
   que `$TMPDIR/cuantoes-003/client-tests-antes.txt`); `npm run build` en `client/` sin
   advertencias nuevas; y `git status` sin `server/.env`, `node_modules` ni `build`. Registrar el
   resultado como nota de estado de esta tarea (fecha y números)
+  - *Estado 2026-10-08*: servidor `Tests: 265 passed, 265 total`; cliente código 0, misma salida
+    que la línea de base; build de `client/` con un log idéntico al de la línea de base (mismas 3
+    advertencias); `git status` sin `server/.env`, `node_modules` ni `build`. Queda solo el ajuste
+    del README de T026 sin commitear ✅
 - [X] T028 Dejar anotado en esta tarea, como pendientes para después del merge a `main` (no se
   ejecutan en la rama):
   1. Validar el sitio publicado según `quickstart.md` §7 (SC-005): despliegue con base `client`,
