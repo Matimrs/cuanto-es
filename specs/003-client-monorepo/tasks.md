@@ -304,6 +304,10 @@ búsqueda de referencias residuales de `quickstart.md` §6 sin resultados.
   ejecutan en la rama):
   1. Validar el sitio publicado según `quickstart.md` §7 (SC-005): despliegue con base `client`,
      app y recursos sin 404 nuevos, `/sitemap.xml` 200, `/` 200 y `/persons` 404 como antes.
+     *Estado 2026-10-08* (tras el push de `main@49e9207e`): `/`, `/manifest.json`,
+     `/sitemap.xml`, íconos y logos responden 200; `/persons` 404; el bundle sigue siendo
+     `main.9fec9b0f.js` / `main.e2288cd5.css` ✅. **Falta** confirmar en el panel (Deploys) que
+     el deploy publicado es `main@49e9207` y que su log usa `client` como base.
   2. Enmienda PATCH de la constitución con `/speckit-constitution` para quitar la cláusula
      "Transición al monorepo", ya cumplida (R8).
   3. En la feature siguiente de la Fase 3, agregar la regla `/* → /index.html 200` en
@@ -312,6 +316,10 @@ búsqueda de referencias residuales de `quickstart.md` §6 sin resultados.
      `distributionm.netlify.app`, un sitio viejo que ya no recibe deploys, a
      `cuanto-es.netlify.app` (R4). No se cambió en esta feature porque T020 deja los enlaces como
      están.
+  5. Actualizar la versión de Node del build de Netlify, que hoy es Node 18 (sin soporte desde
+     abril de 2025; el panel lo avisa). Agregar `[build.environment]` con `NODE_VERSION = "22"` en
+     `netlify.toml` y verificar que el build sigue dando `main.9fec9b0f.js`. Conviene hacerlo en
+     la feature siguiente de la Fase 3, junto con el punto 3.
 
 ---
 
