@@ -1,6 +1,26 @@
 <!--
 Sync Impact Report
 ==================
+Version change: 2.1.0 → 2.1.1 (PATCH)
+Motivo: la transición al monorepo quedó completa con specs/003-client-monorepo (la SPA vive en
+client/ y el repo tiene client/ y server/ como paquetes hermanos).
+Modified principles: ninguno.
+Added sections: ninguna.
+Removed sections:
+  - Restricciones Técnicas → "Transición al monorepo": era una regla temporal, ya cumplida
+    antes del fin de la Fase 3. No cambia ninguna obligación vigente, por eso es PATCH.
+Modified sections:
+  - Restricciones Técnicas → Estructura objetivo: la guía de contexto es `docs/CLAUDE.md` (no
+    hay un `CLAUDE.md` en la raíz) y se nombra `netlify.toml` en la raíz.
+  - Restricciones Técnicas → Despliegue: el cliente se publica en Netlify desde `client/` con
+    `netlify.toml`. El destino de la API y la base sigue pendiente.
+Templates / dependientes: no se modifican (leen la constitución en tiempo de ejecución).
+Follow-up TODOs:
+  - TODO(DEPLOY_TARGET): sin cambios (sigue pendiente; la Fase 3 lo necesita para publicar el
+    cliente consumiendo la API).
+
+Historial previo
+----------------
 Version change: 2.0.0 → 2.1.0 (MINOR)
 Motivo: hallazgos C3 y C4 de /speckit-analyze sobre specs/001-backend-auth-base.
 Modified principles:
@@ -21,8 +41,6 @@ Follow-up TODOs:
   - El TODO anterior "la migración al monorepo queda como tarea de la Fase 1" se reemplaza por
     la regla de transición (feature propia, antes de terminar la Fase 3).
 
-Historial previo
-----------------
 Version change: 1.0.0 → 2.0.0 (MAJOR)
 Motivo: se incorpora docs/CLAUDE.md. El Principio V ("100% en el cliente, sin backend") se
 redefine de forma incompatible: el proyecto pasa a ser un sistema cliente-servidor con
@@ -189,20 +207,16 @@ app original, y son la base del dashboard y de la exportación.
     y Bulma.
   - `server/src/{routes,controllers,models,middleware}` e `index.js`.
   - `server/prisma/schema.prisma`.
-  - `docker-compose.yml` y `CLAUDE.md` en la raíz.
-- **Transición al monorepo**: mientras no se haga la feature dedicada a mover la app React a
-  `client/`, la SPA PUEDE seguir en la raíz (`src/`, `public/`, `package.json`) y `server/`
-  convive a su lado. Esa mudanza DEBE hacerse en una feature propia (no mezclada con trabajo de
-  backend) y DEBE completarse antes de terminar la Fase 3 del roadmap (cliente consumiendo la
-  API). Hasta entonces, las features no necesitan justificar este desvío en Complexity Tracking.
+  - `docker-compose.yml` y `netlify.toml` en la raíz; la guía de contexto en `docs/CLAUDE.md`.
 - **Modelo de datos base**: `User`, `Group`, `GroupMember`, `Category`, `Expense`, `Settlement`,
   según `docs/CLAUDE.md` §4.
 - **Contenedores**: Docker Compose levanta `db` (postgres:16) y `api` (puerto 3001). El cliente
   NO se containeriza y corre de forma nativa con `npm start`.
 - **Build y lint**: `npm run build` del cliente DEBE completarse sin errores, y el cliente DEBE
   respetar la configuración ESLint `react-app` sin advertencias nuevas.
-- **Despliegue**: TODO(DEPLOY_TARGET). El cliente puede seguir desplegándose como sitio
-  estático (Netlify); el destino de la API y de la base de datos está pendiente.
+- **Despliegue**: el cliente se publica como sitio estático en Netlify, construido desde
+  `client/` según `netlify.toml`. TODO(DEPLOY_TARGET): el destino de la API y de la base de
+  datos está pendiente.
 - NO se introducen TypeScript, gestores de estado externos, otro ORM u otra base de datos sin
   enmendar esta constitución.
 
@@ -258,4 +272,4 @@ Una feature que adelanta una fase posterior DEBE justificarlo en su plan.
 - Cada plan y cada revisión de código DEBE verificar el cumplimiento de los principios; la
   complejidad adicional DEBE justificarse explícitamente.
 
-**Version**: 2.1.0 | **Ratified**: 2026-10-07 | **Last Amended**: 2026-10-07
+**Version**: 2.1.1 | **Ratified**: 2026-10-07 | **Last Amended**: 2026-10-08
