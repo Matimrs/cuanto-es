@@ -2,8 +2,8 @@
 // cliente sin cambiarlos. Cubre los escenarios de la spec, la equivalencia con la app (SC-001),
 // la regla del centavo sobrante (FR-024a), los pagos como entrada (FR-027a), el determinismo
 // (FR-025) y las invariantes del Principio I sobre grupos aleatorios (SC-002, SC-007).
-const Category = require('../../../src/classes/Category.js').default;
-const { calculate } = require('../../../src/utils/calculate.js');
+const Category = require('../../../client/src/classes/Category.js').default;
+const { calculate } = require('../../../client/src/utils/calculate.js');
 const {
   computeShares,
   computeSettlements,

@@ -19,7 +19,7 @@ services:
       retries: 10
 
   api:
-    # Contexto en la raíz: la imagen incluye src/classes y src/utils del cliente (Fase 2).
+    # Contexto en la raíz: la imagen incluye client/src/classes y client/src/utils (Fase 2).
     build:
       context: .
       dockerfile: server/Dockerfile

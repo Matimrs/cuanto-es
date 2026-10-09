@@ -8,8 +8,8 @@
 //     lo pagado; la unificación de pagos lo compensa contra la deuda (FR-027a).
 // Es JavaScript puro: no conoce Prisma ni Express.
 
-const Category = require('../../../src/classes/Category.js').default;
-const { calculate } = require('../../../src/utils/calculate.js');
+const Category = require('../../../client/src/classes/Category.js').default;
+const { calculate } = require('../../../client/src/utils/calculate.js');
 
 /**
  * Parte de cada participante en centavos (FR-024a): el total dividido por la cantidad de

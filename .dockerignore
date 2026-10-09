@@ -1,9 +1,10 @@
 # El contexto de build de `api` es la raíz del repo (docker-compose.yml). Solo se envía lo que
-# usa server/Dockerfile: el servidor y el dominio compartido del cliente.
+# usa server/Dockerfile: el servidor y el dominio compartido del cliente (client/src/classes,
+# client/src/utils).
 *
 !server/package.json
 !server/package-lock.json
 !server/prisma/
 !server/src/
-!src/classes/
-!src/utils/
+!client/src/classes/
+!client/src/utils/
