@@ -69,34 +69,34 @@ diseño, con el inventario del estado actual verificado en el repositorio.
 
 ## R4. Publicación en Netlify
 
-- **Estado actual**: no hay `netlify.toml`; la configuración de build está en el panel de
-  Netlify, que no es visible desde el repo. El sitio de este repositorio es
-  `https://distributionm.netlify.app/` (enlace del README).
-- **Hallazgos durante la implementación** (2026-10-08):
-  - `cuantoes.com.ar` sirve otra aplicación (Next.js, título "¿Cuánto es? — Dividí la cuenta
-    fácil"), no esta SPA. Las validaciones del sitio publicado usan solo
-    `distributionm.netlify.app`.
-  - `distributionm.netlify.app` sirve una versión anterior a mayo de 2025: `/sitemap.xml`
-    (agregado en `8d50b24e`, 2025-05-23) responde 404 y el bundle no coincide con el build de
-    `main`. Es probable que el sitio ya no despliegue automáticamente desde el repo; hay que
-    confirmarlo en el panel.
-  - El build tiene 3 advertencias de ESLint que también están en `main`. Create React App las
-    trata como errores si `CI=true`, que es como suelen correr los builds de Netlify. Como el
-    sitio se publicó igual, el comando del panel probablemente anula `CI`, o el entorno no lo
-    define.
-- **Decision**: agregar `netlify.toml` en la raíz con:
+- **Estado actual** (verificado el 2026-10-08 con el panel y con el sitio): no hay
+  `netlify.toml`. El sitio de Netlify `cuanto-es` (`https://cuanto-es.netlify.app/`) está
+  conectado a `github.com/Matimrs/cuanto-es` y despliega `main` automáticamente (último deploy:
+  `main@baf3457`). Configuración del panel: base `/`, comando `npm run build`, publicar `build`.
+  El bundle publicado (`main.9fec9b0f.js`) es idéntico al build de la línea de base (T002).
+- **Otros dominios** (no son el despliegue de este repo y no se validan):
+  - `distributionm.netlify.app`, el enlace del README: otro sitio de Netlify que quedó con una
+    versión de entre septiembre de 2024 y mayo de 2025 (sin `/sitemap.xml`, bundle
+    `main.8f325add.js`). Ya no recibe deploys.
+  - `cuantoes.com.ar`: otra aplicación (Next.js, título "¿Cuánto es? — Dividí la cuenta
+    fácil").
+- **Advertencias de ESLint**: el build tiene 3 advertencias que también están en `main`, y aun
+  así Netlify publica con `npm run build`. Su entorno de build no las trata como errores, así
+  que no hace falta anular `CI`.
+- **Decision**: agregar `netlify.toml` en la raíz que replica la configuración del panel y solo
+  cambia el directorio base:
 
   ```toml
   [build]
     base = "client"
-    command = "CI= npm run build"
+    command = "npm run build"
     publish = "build"
   ```
 
-  `publish` es relativo a `base`, así que publica `client/build/`. `CI=` vacía la variable solo
-  para el build: da el mismo resultado que hoy tanto si el panel ya la anulaba como si el
-  entorno no la define, y evita que las 3 advertencias existentes rompan el despliegue. Corregir
-  esas advertencias es un cambio de código del cliente, fuera de esta feature (FR-007).
+  `publish` es relativo a `base`, así que publica `client/build/`. Se descartó
+  `CI= npm run build`, una defensa por si Netlify pasara a definir `CI=true`: el comando actual
+  está comprobado y cambiarlo sería una diferencia sin necesidad presente (YAGNI). Si algún día
+  el build falla por las advertencias, la solución es corregirlas en el código del cliente.
 - **Rationale**: la configuración del archivo tiene prioridad sobre la del panel, así que el
   primer despliegue después del merge construye desde `client/` sin que nadie toque el panel
   (FR-012). Queda versionada y revisable. No se agregan redirecciones (R5).
@@ -109,7 +109,7 @@ diseño, con el inventario del estado actual verificado en el repositorio.
 ## R5. Navegación directa a rutas internas
 
 - **Hallazgo** (verificado el 2026-10-08): `GET /` responde 200 y `GET /persons` responde 404,
-  en `distributionm.netlify.app` (el sitio de este repo; ver R4). La SPA usa `BrowserRouter` y no
+  en `cuanto-es.netlify.app` (el sitio de este repo; ver R4). La SPA usa `BrowserRouter` y no
   existe una regla `/* → /index.html 200`.
 - **Decision**: no agregar la regla en esta feature. Se corrigió la spec (US1-4, FR-013) para
   que exija mantener el comportamiento actual y no uno que hoy no existe.

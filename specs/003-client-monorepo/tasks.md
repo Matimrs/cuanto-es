@@ -89,12 +89,17 @@ paralelo.
     tenía tomada la carpeta), así que se movió archivo por archivo
     (`git mv "$f" "client/$f"` sobre `git ls-files`) y después se borraron las carpetas vacías.
     Resultado: 37 `R`, `37 files changed, 0 insertions(+), 0 deletions(-)` ✅
-- [ ] T005 **⏸ commit** Mostrar `git status` al usuario y sugerir el mensaje
+- [X] T005 **⏸ commit** Mostrar `git status` al usuario y sugerir el mensaje
   `Mueve la SPA a client/ (sin cambios de contenido)`. No seguir hasta que el usuario confirme
   el commit. Después, comprobar con
   `git log --follow --oneline -- client/src/utils/calculate.js | tail -3` que aparecen commits
   anteriores a la mudanza (FR-003). Anotar el hash del commit de la mudanza en la nota de estado
   de esta tarea (lo usa T025)
+  - *Estado 2026-10-08*: commit de la mudanza **`e4eceac3`** ("Implement de la Fase 3. Mover el
+    front a client/"). Contiene los 37 renombres como `R100` (sin ediciones) y además los 7
+    documentos nuevos de `specs/003-client-monorepo/`, que no afectan la detección de renombres.
+    `git log --follow` muestra historial anterior: `calculate.js` 9 commits, `index.html` 13 y
+    `package.json` 11 ✅
 
 **Checkpoint**: la SPA está en `client/` con su historial. A partir de acá el servidor no
 encuentra el dominio hasta T012 y el sitio de Netlify no se construye hasta T008: no integrar
@@ -112,31 +117,35 @@ comparado idéntico con la línea de base y recorrido manual sin diferencias.
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Limpiar los restos locales de la raíz que ya no corresponden:
+- [X] T006 [US1] Limpiar los restos locales de la raíz que ya no corresponden:
   `rm -rf node_modules build` (no están versionados). Instalar el cliente con `npm ci` en
   `client/`
-- [ ] T007 [P] [US1] Actualizar `.gitignore` (R6): reemplazar `/*node_modules` (línea 4) por
+  - *Estado 2026-10-08*: restos de la raíz borrados; `npm ci` en `client/` OK ✅
+- [X] T007 [P] [US1] Actualizar `.gitignore` (R6): reemplazar `/*node_modules` (línea 4) por
   `/client/node_modules/`, `/coverage` (línea 9) por `/client/coverage/` y `/build` (línea 12)
   por `/client/build/`. Dejar intactas las reglas `.env.*.local`, los logs y las de `server/`.
   Verificar con `git status --short` que no aparecen `client/node_modules/` ni `client/build/`
   después del build de T009
-- [ ] T008 [P] [US1] Crear `netlify.toml` en la raíz (R4) con un comentario de una línea que
+  - *Estado 2026-10-08*: `git status` no lista `client/node_modules/` ni `client/build/` ✅
+- [X] T008 [P] [US1] Crear `netlify.toml` en la raíz (R4) con un comentario de una línea que
   explique que el sitio se construye desde `client/`, y la sección:
-  `[build]` con `base = "client"`, `command = "CI= npm run build"` (R4: evita que las 3 advertencias existentes rompan el
-  build si Netlify define `CI=true`) y `publish = "build"` (relativo a
+  `[build]` con `base = "client"`, `command = "npm run build"` (el mismo comando del panel; R4) y `publish = "build"` (relativo a
   `base`). Sin `[[redirects]]` ni otras secciones: la navegación directa no cambia en esta
   feature (R5)
-- [ ] T009 [US1] Build comparado (SC-002, R7): en `client/`,
+- [X] T009 [US1] Build comparado (SC-002, R7): en `client/`,
   `npm run build 2>&1 | tee "$TMPDIR/cuantoes-003/build-despues.log"`; luego
   `diff "$TMPDIR/cuantoes-003/build-antes.log" "$TMPDIR/cuantoes-003/build-despues.log"` (sin
   advertencias nuevas; pueden variar solo tiempos o rutas impresas) y
   `diff -r "$TMPDIR/cuantoes-003/build-antes" build`. Esperado: sin diferencias. Si difieren
   archivos que no son `.map`, detenerse e investigar; si solo difieren `.map`, documentar por qué
   en la nota de estado de esta tarea
+  - *Estado 2026-10-08*: build OK; `diff` de los logs sin diferencias (mismas 3 advertencias);
+    `diff -r` de los dos `build/` **sin diferencias** (bundle `main.9fec9b0f.js`, el mismo que
+    publica `cuanto-es.netlify.app`). Pruebas del cliente: misma salida, código 0 ✅
 - [ ] T010 [US1] Recorrido manual (SC-003): `npm start` en `client/` y seguir los 5 pasos de
   `quickstart.md` §3 "Recorrido manual", también en un ancho de 320 px. Comparar con la misma
-  carga en el build de la línea de base (`npx serve -s "$TMPDIR/cuantoes-003/build-antes"`), no
-  con el sitio publicado, que es una versión anterior (R4). Si el agente no puede abrir un navegador, pedirle al
+  carga en `https://cuanto-es.netlify.app/`, que sirve exactamente el build de la línea de base
+  (mismo hash, R4). Si el agente no puede abrir un navegador, pedirle al
   usuario que haga el recorrido y registrar su resultado
 - [ ] T011 [US1] **⏸ commit** Sugerir `Ignora artefactos de client/ y versiona la configuración de Netlify`
   para `.gitignore` y `netlify.toml`
@@ -156,35 +165,44 @@ contenedor.
 
 ### Implementation for User Story 2
 
-- [ ] T012 [P] [US2] En `server/src/domain/settlements.js` (líneas 11–12), cambiar
+- [X] T012 [P] [US2] En `server/src/domain/settlements.js` (líneas 11–12), cambiar
   `'../../../src/classes/Category.js'` por `'../../../client/src/classes/Category.js'` y
   `'../../../src/utils/calculate.js'` por `'../../../client/src/utils/calculate.js'`. Si el
   comentario de cabecera del archivo menciona `src/`, actualizarlo a `client/src/`. No cambiar
   nada más (FR-011)
-- [ ] T013 [P] [US2] Mismo cambio en `server/tests/unit/settlements.domain.test.js` (líneas 5–6)
-- [ ] T014 [US2] Correr `npm test` en `server/` (con `docker compose up -d db` y `client/`
+- [X] T013 [P] [US2] Mismo cambio en `server/tests/unit/settlements.domain.test.js` (líneas 5–6)
+- [X] T014 [US2] Correr `npm test` en `server/` (con `docker compose up -d db` y `client/`
   instalado por T006). Esperado: la misma cantidad que `$TMPDIR/cuantoes-003/tests-antes.txt`
   (265 passed). Comprobar además que el dominio no está duplicado:
   `git ls-files | grep -E '(^|/)calculate\.js$'` devuelve solo `client/src/utils/calculate.js`
-- [ ] T015 [P] [US2] Actualizar `server/Dockerfile` (R3): comentario de las líneas 1–2 (el
+  - *Estado 2026-10-08*: `Tests: 265 passed, 265 total` (igual que la línea de base); el único
+    `calculate.js` versionado es `client/src/utils/calculate.js` ✅
+- [X] T015 [P] [US2] Actualizar `server/Dockerfile` (R3): comentario de las líneas 1–2 (el
   dominio está en `client/src/classes` y `client/src/utils`); `COPY client/src/classes
   /repo/client/src/classes` y `COPY client/src/utils /repo/client/src/utils` en lugar de las
   líneas 12–13; y en las líneas 15–17, comentario (`client/src/classes/Peer.js` importa `uuid`;
   Node lo busca subiendo desde `/repo/client/src`) y
   `RUN ln -s /repo/server/node_modules /repo/client/node_modules`
-- [ ] T016 [P] [US2] Actualizar `.dockerignore` (R3): en el comentario de las líneas 1–2, "el
+- [X] T016 [P] [US2] Actualizar `.dockerignore` (R3): en el comentario de las líneas 1–2, "el
   dominio compartido del cliente (`client/src/classes`, `client/src/utils`)"; reemplazar
   `!src/classes/` y `!src/utils/` por `!client/src/classes/` y `!client/src/utils/`. No agregar
   ninguna otra excepción (la imagen no lleva el resto de `client/`)
-- [ ] T017 [P] [US2] Actualizar el comentario del servicio `api` en `docker-compose.yml` (línea
+- [X] T017 [P] [US2] Actualizar el comentario del servicio `api` en `docker-compose.yml` (línea
   22): "la imagen incluye `client/src/classes` y `client/src/utils`". Nada más cambia en el
   compose
-- [ ] T018 [US2] Validar en Docker (FR-010, SC-004) según `quickstart.md` §5:
+- [X] T018 [US2] Validar en Docker (FR-010, SC-004) según `quickstart.md` §5:
   `docker compose down`, `docker compose build --no-cache api`, `docker compose up -d`; en los
   logs de `api` deben verse las migraciones aplicadas y la API escuchando en 3001;
   `docker compose exec api ls /repo/client/src` debe listar solo `classes` y `utils`. Recorrer los
   15 pasos de `specs/002-groups-expenses-settlements/quickstart.md` §2 contra
   `http://localhost:3001` y confirmar que las liquidaciones se calculan
+  - *Estado 2026-10-08*: `docker compose build --no-cache api` OK; logs: "2 migrations found",
+    "No pending migrations to apply", "API de CuantoEs escuchando en el puerto 3001".
+    `/repo` tiene solo `client` y `server`; `/repo/client/src` solo `classes` y `utils`;
+    `/repo/client/node_modules` → `/repo/server/node_modules`. Los 15 pasos de la quickstart de
+    la Fase 2, con un script contra `http://localhost:3001`: **15 OK** (paso 12: Dani→Ana 40.00 y
+    Dani→Beto 10.00, coincide con la cuenta a mano) ✅. En Git Bash, `docker compose exec` con
+    rutas necesita `MSYS_NO_PATHCONV=1`
 - [ ] T019 [US2] **⏸ commit** Sugerir `Apunta el servidor y la imagen Docker al dominio en client/`
   para los cinco archivos de T012–T017
 
@@ -202,7 +220,7 @@ búsqueda de referencias residuales de `quickstart.md` §6 sin resultados.
 
 ### Implementation for User Story 3
 
-- [ ] T020 [P] [US3] Actualizar `README.md` (FR-015):
+- [X] T020 [P] [US3] Actualizar `README.md` (FR-015):
   - Sección "Cómo usar" (castellano, líneas 18–22) y "How to Use" (inglés, líneas 109–113):
     agregar el paso `cd client` antes de `npm install` / `npm start`.
   - Línea 32: `` `client/src/utils/calculate.js` ``.
@@ -217,18 +235,20 @@ búsqueda de referencias residuales de `quickstart.md` §6 sin resultados.
     normalmente los aplica sobre `client/src/`; si aparece un conflicto de tipo "deleted by
     them", aplicar el cambio a mano en el archivo equivalente de `client/src/`.
   - No cambiar el resto del texto (datos del desarrollador, enlaces).
-- [ ] T021 [P] [US3] Actualizar `docs/CLAUDE.md` §2 "Estado actual" (líneas 16–27) (FR-016,
+- [X] T021 [P] [US3] Actualizar `docs/CLAUDE.md` §2 "Estado actual" (líneas 16–27) (FR-016,
   FR-018): `client/` es la app React y su dominio está en `client/src/classes/` y
   `client/src/utils/calculate.js`; reemplazar "`server/` — no existe todavía" por una línea que
   diga que `server/` tiene la API de las Fases 1 y 2; agregar que la transición al monorepo de la
   constitución quedó completa con `specs/003-client-monorepo`. La descripción de los Context
   ("esto es lo que hay que reemplazar") se mantiene. §3 ya muestra `client/`: no cambia
-- [ ] T022 [P] [US3] En `docs/entregables/diagrama-de-clases.md` línea 70, renombrar el paquete
+- [X] T022 [P] [US3] En `docs/entregables/diagrama-de-clases.md` línea 70, renombrar el paquete
   PlantUML a `"Dominio del cliente (client/src/, reutilizado)"` y actualizar cualquier otra
   mención a `src/classes` o `src/utils` del mismo archivo (buscar con
   `grep -n "src/" docs/entregables/diagrama-de-clases.md`). Revisar con el mismo `grep`
   `docs/entregables/casos-de-uso.md` y `docs/entregables/plan-de-pruebas.md`, y corregir solo
   rutas del dominio del cliente (las de `server/` quedan)
+  - *Estado 2026-10-08*: solo `diagrama-de-clases.md:70` mencionaba `src/`; los otros dos
+    entregables no tienen rutas del dominio del cliente ✅
 - [ ] T023 [US3] **⏸ commit** Sugerir `Actualiza la documentación a la estructura client/ + server/`
 
 **Checkpoint**: las tres historias completas.
@@ -237,14 +257,19 @@ búsqueda de referencias residuales de `quickstart.md` §6 sin resultados.
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] T024 Buscar referencias residuales (SC-006) con los comandos de `quickstart.md` §6 (son dos
+- [X] T024 Buscar referencias residuales (SC-006) con los comandos de `quickstart.md` §6 (son dos
   búsquedas; las dos deben dar vacío). Corregir lo que aparezca (fuera de `specs/001-*`, `specs/002-*` y
   `client/`) y repetir
-- [ ] T025 Verificar la estructura (FR-001, FR-002, SC-007) según `quickstart.md` §2: en la raíz
+  - *Estado 2026-10-08*: las dos búsquedas, sobre el árbol de trabajo (incluido lo no
+    commiteado), sin resultados ✅
+- [X] T025 Verificar la estructura (FR-001, FR-002, SC-007) según `quickstart.md` §2: en la raíz
   no hay `src/`, `public/`, `package.json` ni `package-lock.json`; `git ls-files client | wc -l`
   da 37; `git log --follow` muestra historial anterior en `client/src/utils/calculate.js`,
   `client/public/index.html` y `client/package.json`. Confirmar que ningún archivo de `client/`
   cambió después del commit de la mudanza: `git diff <hash anotado en T005> -- client/` vacío
+  - *Estado 2026-10-08*: raíz con `client/`, `docker-compose.yml`, `docs/`, `netlify.toml`,
+    `README.md`, `server/` y `specs/`; 37 archivos en `client/`; `git diff e4eceac3 -- client/`
+    vacío; historial verificado en T005 ✅
 - [ ] T026 Prueba de un integrante nuevo (SC-008, US3): en una carpeta temporal fuera del repo,
   `git clone` del repositorio local y `git checkout feature/003-client-monorepo`; seguir **solo**
   el README para instalar y levantar el cliente y correr las pruebas del servidor (con la base de
@@ -258,7 +283,7 @@ búsqueda de referencias residuales de `quickstart.md` §6 sin resultados.
   que `$TMPDIR/cuantoes-003/client-tests-antes.txt`); `npm run build` en `client/` sin
   advertencias nuevas; y `git status` sin `server/.env`, `node_modules` ni `build`. Registrar el
   resultado como nota de estado de esta tarea (fecha y números)
-- [ ] T028 Dejar anotado en esta tarea, como pendientes para después del merge a `main` (no se
+- [X] T028 Dejar anotado en esta tarea, como pendientes para después del merge a `main` (no se
   ejecutan en la rama):
   1. Validar el sitio publicado según `quickstart.md` §7 (SC-005): despliegue con base `client`,
      app y recursos sin 404 nuevos, `/sitemap.xml` 200, `/` 200 y `/persons` 404 como antes.
@@ -266,6 +291,10 @@ búsqueda de referencias residuales de `quickstart.md` §6 sin resultados.
      "Transición al monorepo", ya cumplida (R8).
   3. En la feature siguiente de la Fase 3, agregar la regla `/* → /index.html 200` en
      `netlify.toml` para la navegación directa (R5).
+  4. Decidir si el enlace "en línea" del README (castellano e inglés) pasa de
+     `distributionm.netlify.app`, un sitio viejo que ya no recibe deploys, a
+     `cuanto-es.netlify.app` (R4). No se cambió en esta feature porque T020 deja los enlaces como
+     están.
 
 ---
 

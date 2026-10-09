@@ -17,14 +17,19 @@ con usuarios, persistencia, historial y medios de pago reales.
 
 - `client/` — la app React original. **Funciona y no hay que rehacerla desde cero.**
   Contiene:
-  - `src/classes/Category.js`, `Person.js`, `Peer.js` — modelo de dominio.
-  - `src/utils/calculate.js` — algoritmo de neteo y simplificación de deudas (con
-    resolución de cadenas). Es la pieza más valiosa del proyecto, no reinventar.
+  - `client/src/classes/Category.js`, `Person.js`, `Peer.js` — modelo de dominio.
+  - `client/src/utils/calculate.js` — algoritmo de neteo y simplificación de deudas (con
+    resolución de cadenas). Es la pieza más valiosa del proyecto, no reinventar. El servidor
+    lo reutiliza desde esta misma ubicación, sin copiarlo.
   - Context API (`PersonContext`, `CategoryContext`, `ResultContext`) manejando todo en
     memoria (`useState`). **Esto es lo que hay que reemplazar por llamadas a la API.**
   - No tiene tests, ni backend, ni concepto de "grupo/evento" — todo vive en una sesión
     implícita única.
-- `server/` — **no existe todavía.** Es lo primero a construir.
+- `server/` — la API (Node + Express + Prisma + PostgreSQL): autenticación (Fase 1) y grupos,
+  miembros, categorías, gastos y liquidaciones (Fase 2).
+- La transición al monorepo de la constitución quedó completa con `specs/003-client-monorepo`:
+  la SPA se mudó de la raíz a `client/` y el repo tiene `client/` y `server/` como paquetes
+  hermanos.
 
 ## 3. Arquitectura objetivo
 

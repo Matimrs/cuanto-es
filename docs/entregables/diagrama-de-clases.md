@@ -67,7 +67,7 @@ package "Modelo persistido (server/prisma)" {
   }
 }
 
-package "Dominio del cliente (src/, reutilizado)" {
+package "Dominio del cliente (client/src/, reutilizado)" {
   class "Category (cliente)" as CCategory {
     - id
     - name

@@ -17,9 +17,10 @@ Distribution es una aplicación que se encarga de distribuir equitativamente los
 
 ## Cómo usar
 1. Clona este repositorio: `git clone https://github.com/tu-usuario/tu-repositorio.git`
-2. Instala las dependencias: `npm install`
-3. Inicia la aplicación: `npm start`
-4. Accede a la aplicación desde tu navegador: [http://localhost:3000](http://localhost:3000)
+2. Entra a la carpeta de la app: `cd client`
+3. Instala las dependencias: `npm install`
+4. Inicia la aplicación: `npm start`
+5. Accede a la aplicación desde tu navegador: [http://localhost:3000](http://localhost:3000)
 
 También puedes acceder a la aplicación en línea: [Distribution App](https://distributionm.netlify.app/)
 
@@ -29,7 +30,7 @@ También puedes acceder a la aplicación en línea: [Distribution App](https://d
 
 API de CuantoEs (Node + Express + Prisma + PostgreSQL). Expone la autenticación (`/auth/*`) y
 la gestión de grupos, miembros, categorías, gastos y liquidaciones (`/groups/*`). Las
-liquidaciones se calculan con el mismo algoritmo de la app (`src/utils/calculate.js`).
+liquidaciones se calculan con el mismo algoritmo de la app (`client/src/utils/calculate.js`).
 
 ### Requisitos
 
@@ -72,11 +73,15 @@ liquidaciones se calculan con el mismo algoritmo de la app (`src/utils/calculate
 Con el contenedor `db` levantado (`docker compose up -d db`):
 
 ```bash
-npm install          # en la raíz: el cálculo usa src/utils/calculate.js, que importa `uuid`
-cd server
+cd client
+npm install          # el cálculo usa client/src/utils/calculate.js, que importa `uuid`
+cd ../server
 npm install
 npm test
 ```
+
+Si los tests fallan con `Cannot find module 'uuid'` desde `client/src/classes/Peer.js`, faltan
+las dependencias del cliente: `cd client && npm install`.
 
 Los tests usan una base aparte, `cuantoes_test`, que se crea sola la primera vez que se
 inicializa el volumen. Si el volumen es anterior y la base no existe:
@@ -87,6 +92,16 @@ docker compose exec db createdb -U cuantoes cuantoes_test
 
 Guía completa y escenarios de prueba manual:
 [specs/001-backend-auth-base/quickstart.md](specs/001-backend-auth-base/quickstart.md).
+
+### Si venís de una versión anterior
+
+La app React se mudó de la raíz a `client/` (`specs/003-client-monorepo`).
+
+1. Borrá los restos locales de la raíz, que ya no se usan ni están ignorados:
+   `rm -rf node_modules build`. Después instalá en `client/` (`cd client && npm install`).
+2. Si tenés una rama con cambios en `src/`, al hacer merge o rebase git normalmente los aplica
+   sobre `client/src/`. Si aparece un conflicto de tipo "deleted by them", aplicá el cambio a
+   mano en el archivo equivalente de `client/src/`.
 
 
 ## ENGLISH    
@@ -108,9 +123,10 @@ Distribution is an application that fairly distributes expenses among 2 or more 
 
 ## How to Use
 1. Clone this repository: `git clone https://github.com/your-username/your-repository.git`
-2. Install dependencies: `npm install`
-3. Start the application: `npm start`
-4. Access the application from your browser: [http://localhost:3000](http://localhost:3000)
+2. Go to the app folder: `cd client`
+3. Install dependencies: `npm install`
+4. Start the application: `npm start`
+5. Access the application from your browser: [http://localhost:3000](http://localhost:3000)
 
 You can also access the online application: [Distribution App](https://distributionm.netlify.app/)
 

@@ -136,26 +136,29 @@ de la constitución menciona `src/` como registro. Revisar además a mano que el
 
 ## 7. Sitio publicado (US1-4, SC-005) — después del merge a `main`
 
-El sitio de este repositorio es `https://distributionm.netlify.app/` (el enlace del README).
-`cuantoes.com.ar` es otra aplicación (Next.js) y no se valida acá (R4).
+El sitio de este repositorio es `https://cuanto-es.netlify.app/` (sitio `cuanto-es` de Netlify,
+despliegue automático desde `main`). `distributionm.netlify.app` (enlace del README) es un sitio
+viejo que ya no recibe deploys, y `cuantoes.com.ar` es otra aplicación: ninguno de los dos se
+valida acá (R4).
 
-1. En el panel de Netlify, confirmar que el sitio está conectado al repositorio con despliegue
-   automático desde `main`, que el despliegue usó `client` como directorio base (el log lo indica
-   al principio) y que terminó bien.
-2. Abrir `https://distributionm.netlify.app/` con las herramientas de desarrollo abiertas: la app
+1. En la pestaña **Deploys** del sitio `cuanto-es`, confirmar que el deploy del merge terminó bien
+   y que su log muestra `client` como directorio base y `npm run build` como comando.
+2. Abrir `https://cuanto-es.netlify.app/` con las herramientas de desarrollo abiertas: la app
    carga, sin errores nuevos en la consola ni recursos con 404 (íconos, logos, `manifest.json`).
-3. Rutas (R5): `/` y `/manifest.json` responden 200, `/persons` responde 404 como antes, y
-   `/sitemap.xml` pasa a responder 200 (el despliegue de antes era anterior al commit que lo
-   agregó):
+3. Rutas (R5): `/`, `/manifest.json` y `/sitemap.xml` responden 200 y `/persons` responde 404,
+   igual que antes de la mudanza (verificado el 2026-10-08):
 
    ```bash
    for p in / /manifest.json /persons /sitemap.xml; do
-     curl -s -o /dev/null -w "%{url_effective} %{http_code}\n" "https://distributionm.netlify.app$p"
+     curl -s -o /dev/null -w "%{url_effective} %{http_code}\n" "https://cuanto-es.netlify.app$p"
    done
    ```
 
    En Git Bash no usar `$p` dentro de `-w`: la conversión de rutas de MSYS cambia `/` por
    `C:/Program Files/Git/`.
 
-Si el despliegue falla porque el panel tiene otra configuración, alinearla con `netlify.toml`
-(R4) y volver a desplegar.
+4. Opcional: el bundle publicado (`static/js/main.<hash>.js` en el HTML de `/`) debería tener el
+   mismo hash que `client/build/index.html` del build de T009.
+
+Si el despliegue falla, revisar el log del deploy. El panel tiene base `/`, `npm run build` y
+`build`, y `netlify.toml` pisa esos tres valores (R4).
