@@ -1,0 +1,5 @@
+# El sitio estático se construye desde la SPA en client/ (specs/003-client-monorepo, research R4).
+[build]
+  base = "client"
+  command = "npm run build"
+  publish = "build"
