@@ -309,7 +309,8 @@ búsqueda de referencias residuales de `quickstart.md` §6 sin resultados.
      `main.9fec9b0f.js` / `main.e2288cd5.css` ✅. **Falta** confirmar en el panel (Deploys) que
      el deploy publicado es `main@49e9207` y que su log usa `client` como base.
   2. Enmienda PATCH de la constitución con `/speckit-constitution` para quitar la cláusula
-     "Transición al monorepo", ya cumplida (R8).
+     "Transición al monorepo", ya cumplida (R8). *Estado 2026-10-08*: hecha, constitución
+     v2.1.1 ✅
   3. En la feature siguiente de la Fase 3, agregar la regla `/* → /index.html 200` en
      `netlify.toml` para la navegación directa (R5).
   4. Decidir si el enlace "en línea" del README (castellano e inglés) pasa de
